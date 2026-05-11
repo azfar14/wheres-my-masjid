@@ -1,0 +1,9 @@
+{
+  "city": "Chennai",
+  "found": 812,
+  "verified": 203,
+  "jumuahTimings": 97,
+  "source": "Pipeline snapshot / target dataset",
+  "updatedAt": "2026-05-11",
+  "note": "Use this as a coverage target or imported dataset summary; it is not automatically treated as verified Firestore data."
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "masjid-noor-ambattur",
+    "name": "Masjid Noor",
+    "locality": "Ambattur, Chennai",
+    "address": "Old MTH Road, Indira Nagar, Venkatapuram, Ambattur, Chennai, Tamil Nadu, 600053",
+    "lat": 13.1143,
+    "lng": 80.1548,
+    "verificationStatus": "community_checked",
+    "navigationVerified": false,
+    "jumuah": ["13:15"],
+    "jamaat": {
+      "fajr": "05:10",
+      "dhuhr": "13:30",
+      "asr": "17:15",
+      "maghrib": "18:45",
+      "isha": "20:15"
+    }
+  }
+]

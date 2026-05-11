@@ -1,0 +1,26 @@
+{
+  "name": "wheres-my-masjid-ops-analytics-pipeline",
+  "version": "1.8.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "preflight": "node scripts/preflight.mjs",
+    "syntax-check": "node scripts/syntax-check.js",
+    "pipeline:audit": "node scripts/pipeline-audit.mjs",
+    "pipeline:stats": "node scripts/pipeline-stats.mjs"
+  },
+  "dependencies": {
+    "next": "^16.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "firebase": "^12.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.8.0"
+  }
+}

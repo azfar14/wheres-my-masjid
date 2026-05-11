@@ -1,0 +1,9 @@
+[
+  {
+    "city": "Chennai",
+    "discovered": 812,
+    "verified": 203,
+    "withJumuah": 97,
+    "notes": "Example target model supplied by project owner. Use as a goal/benchmark until live city data is exported."
+  }
+]

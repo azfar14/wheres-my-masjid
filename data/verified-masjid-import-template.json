@@ -1,0 +1,24 @@
+[
+  {
+    "id": "example-masjid-name",
+    "name": "Example Masjid Name",
+    "locality": "Your Area, Your City",
+    "address": "Full address from the verified listing",
+    "coordinates": { "lat": 13.0000000, "lng": 80.0000000 },
+    "phone": "+91XXXXXXXXXX",
+    "facilities": ["Wudu"],
+    "khutbahLanguages": ["Tamil", "Urdu"],
+    "verificationStatus": "admin_verified",
+    "lastVerifiedAt": "2026-05-09",
+    "jamaat": {
+      "fajr": "05:10",
+      "dhuhr": "13:30",
+      "asr": "17:15",
+      "maghrib": "18:45",
+      "isha": "20:15"
+    },
+    "jumuah": ["13:15"],
+    "source": "firestore",
+    "notes": "Verified from Google Maps pin and local notice board. Replace with real verification note."
+  }
+]

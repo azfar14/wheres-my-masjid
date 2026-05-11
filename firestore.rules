@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // MVP owner/admin rule: any Firebase Auth user you create manually can manage data.
+    // This avoids permission errors while you are building. Replace with masjid-level
+    // admin permissions before a serious public launch.
+    function isMvpAdmin() {
+      return signedIn();
+    }
+
+    match /masjids/{masjidId} {
+      allow read: if true;
+      allow create, update, delete: if isMvpAdmin();
+    }
+
+    match /jamaatTimings/{timingId} {
+      allow read: if true;
+      allow create, update, delete: if isMvpAdmin();
+    }
+
+    match /suggestions/{suggestionId} {
+      allow create: if true;
+      allow read, update, delete: if isMvpAdmin();
+    }
+
+    match /claimRequests/{claimId} {
+      allow create: if true;
+      allow read, update, delete: if isMvpAdmin();
+    }
+
+
+    match /notificationTokens/{tokenId} {
+      allow create: if true;
+      allow read, update, delete: if isMvpAdmin();
+    }
+
+    match /auditLogs/{logId} {
+      allow read, create: if isMvpAdmin();
+      allow update, delete: if false;
+    }
+
+    match /admins/{userId} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+    }
+
+    // MVP safety net for newly added admin collections during rapid development.
+    // Public users still cannot read/write these; only signed-in admins can.
+    match /{document=**} {
+      allow read, write: if isMvpAdmin();
+    }
+  }
+}
