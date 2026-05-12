@@ -1,3 +1,5 @@
+'use client';  // This line is crucial for Next.js to treat this as a Client Component
+
 import { useEffect, useState } from 'react';
 
 // Coordinates of the Kaaba (Mecca)
