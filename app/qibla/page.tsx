@@ -337,23 +337,28 @@ export default function QiblaPage() {
       <AppHeader />
       <main>
         <section className="hero-card qibla-hero upgraded-qibla-hero ultra-qibla-hero qibla-command-hero">
-          <p className="kicker">Qibla precision studio</p>
-          <h2 className="hero-title">Professional Qibla bearing, live compass when supported, and reliable fallbacks when sensors fail.</h2>
+          <p className="kicker">Easy Qibla compass</p>
+          <h2 className="hero-title">A simple Qibla compass with a clear Kaaba marker that is easy to follow on your phone.</h2>
           <div className="hero-meta">
             {qiblaBearing !== undefined ? <span className="pill">Qibla {qiblaCardLabel}</span> : <span className="pill">Location needed</span>}
             {distance !== undefined && <span className="pill">{Math.round(distance).toLocaleString()} km to Makkah</span>}
-            <span className="pill">{compassMode === "active" ? "Live compass" : "Sensorless fallback"}</span>
+            <span className="pill">{compassMode === "active" ? "Compass on" : "Bearing mode"}</span>
             <span className="pill">{precisionGrade.label}</span>
           </div>
-          <div className="cta-row">
+          <div className="cta-row qibla-hero-actions">
             <button className="button" type="button" onClick={() => void requestLocation()} disabled={isLocating}>{isLocating ? "Locating…" : "Use my location"}</button>
-            <button className="secondary-button" type="button" onClick={() => void enableCompass()}>Enable compass</button>
-            {rememberedLabel && <button className="ghost-button" type="button" onClick={useRememberedLocation}>Use saved location</button>}
+            <button className="secondary-button" type="button" onClick={() => void enableCompass()}>Start compass</button>
+            {rememberedLabel && <button className="ghost-button qibla-saved-action" type="button" onClick={useRememberedLocation}>Use saved location</button>}
+          </div>
+          <div className="qibla-step-strip" aria-label="How to use the Qibla compass">
+            <div className="qibla-step"><strong>1</strong><span>Get your location</span></div>
+            <div className="qibla-step"><strong>2</strong><span>Start the compass</span></div>
+            <div className="qibla-step"><strong>3</strong><span>Turn until the Kaaba marker is straight ahead</span></div>
           </div>
         </section>
 
         <section className="info-card phone-readiness-card qibla-readiness-pro qibla-command-panel">
-          <h3>Phone readiness</h3>
+          <h3>Before you start</h3>
           <div className="meta-grid">
             <div className="meta-item"><span>Secure page</span><strong>{secure ? "Yes" : "No"}</strong></div>
             <div className="meta-item"><span>Compass API</span><strong>{support.ok ? "Available" : "Fallback"}</strong></div>
@@ -362,32 +367,32 @@ export default function QiblaPage() {
             <div className="meta-item"><span>Location source</span><strong>{locationSource ?? "none"}</strong></div>
             <div className="meta-item"><span>Location accuracy</span><strong>{locationAccuracyMeters ? `${Math.round(locationAccuracyMeters)} m` : "—"}</strong></div>
           </div>
-          <p className="small-text">{support.message}</p>
+          <p className="small-text">{support.message} If the live compass does not work, the large degree number still gives you the correct Qibla bearing.</p>
           {!secure && <div className="notice compact danger">Open the deployed HTTPS site on your phone. Browser security blocks phone location/compass on local network URLs like 192.168.x.x.</div>}
           <p className="small-text">Current URL: {mounted ? readableCurrentUrl() : "checking…"}</p>
         </section>
 
-        <section className="qibla-mode-grid" aria-label="Qibla fallback modes">
+        <section className="qibla-mode-grid" aria-label="How the Qibla page helps you">
           <article className="qibla-mode-card active">
             <span>01</span>
-            <strong>Location + bearing</strong>
-            <p>Most reliable mode: once location is known, the degree value works even when phone compass sensors fail.</p>
+            <strong>Large bearing number</strong>
+            <p>This is the main answer. Even if the compass sensor is weak, the degree bearing remains correct for your location.</p>
           </article>
           <article className={compassMode === "active" ? "qibla-mode-card active" : "qibla-mode-card"}>
             <span>02</span>
-            <strong>Live phone compass</strong>
-            <p>Works only when the browser sends heading data. The interface falls back gracefully if it does not.</p>
+            <strong>Kaaba marker compass</strong>
+            <p>The Kaaba marker shows the Qibla direction. Turn slowly until it moves to the top guide.</p>
           </article>
           <article className="qibla-mode-card">
             <span>03</span>
-            <strong>Map line to Kaaba</strong>
-            <p>Use the Google/OSM line buttons for a visual reference when sensors are unreliable or unavailable.</p>
+            <strong>Map fallback</strong>
+            <p>If sensors fail, open the map line buttons to confirm the direction visually.</p>
           </article>
         </section>
 
         <section className="info-card qibla-calibration-card">
-          <h3>Zero-confusion Qibla safety</h3>
-          <p className="small-text">The Qibla bearing calculation is mathematical. The live compass arrow depends on phone sensors, so this page only treats it as reliable when location accuracy, compass accuracy, and heading stability are acceptable.</p>
+          <h3>Trust check</h3>
+          <p className="small-text">The Qibla bearing is calculated mathematically. The live compass depends on your phone sensors, so the app checks sensor quality before asking you to trust the moving marker.</p>
           <div className="meta-grid">
             <div className="meta-item"><span>Live arrow trust</span><strong>{liveArrowTrusted ? "Ready" : "Use bearing/map line"}</strong></div>
             <div className="meta-item"><span>Samples</span><strong>{headingSamples.length}</strong></div>
@@ -406,13 +411,18 @@ export default function QiblaPage() {
 
         <section className="qibla-studio-card qibla-pro-card qibla-control-room">
           <div className="qibla-main-readout">
-            <span>True-north Qibla bearing</span>
+            <span>Qibla direction</span>
             <strong>{qiblaCardLabel}</strong>
             <p>{instruction}</p>
           </div>
 
+          <div className="notice compact neutral qibla-elder-tip">
+            <strong>Easy way to use it:</strong> Hold the phone flat and turn slowly until the Kaaba marker reaches the top guide.
+          </div>
+
           <div className="qibla-compass-stage">
-            <div className="compass-dial premium-compass precision-compass" aria-label="Qibla compass">
+            <div className="compass-dial premium-compass precision-compass elder-compass" aria-label="Qibla compass">
+              <span className="compass-top-guide" aria-hidden="true">▲</span>
               <span className="compass-north">N</span>
               <span className="compass-east">E</span>
               <span className="compass-south">S</span>
@@ -421,19 +431,21 @@ export default function QiblaPage() {
               <span className="degree-tick tick-90">90°</span>
               <span className="degree-tick tick-180">180°</span>
               <span className="degree-tick tick-270">270°</span>
-              <div className="kaaba-dot">Kaaba</div>
-              <div className="qibla-arrow premium-arrow" style={{ transform: `rotate(${arrowRotation}deg)` }}>
-                <span>↑</span>
+              <div className="compass-center-cap" aria-hidden="true" />
+              <div className="qibla-arrow premium-arrow qibla-kaaba-track" style={{ transform: `rotate(${arrowRotation}deg)` }}>
+                <span className="qibla-needle-shaft" aria-hidden="true" />
+                <span className="qibla-kaaba-marker" aria-hidden="true">🕋</span>
               </div>
             </div>
           </div>
 
           <div className="qibla-stats-grid">
-            <div className="meta-item"><span>Bearing</span><strong>{qiblaBearing !== undefined ? formatDegrees(qiblaBearing) : "—"}</strong></div>
-            <div className="meta-item"><span>Phone heading</span><strong>{heading !== undefined ? formatDegrees(heading) : "—"}</strong></div>
+            <div className="meta-item"><span>Qibla bearing</span><strong>{qiblaBearing !== undefined ? formatDegrees(qiblaBearing) : "—"}</strong></div>
+            <div className="meta-item"><span>Your heading</span><strong>{heading !== undefined ? formatDegrees(heading) : "—"}</strong></div>
             <div className="meta-item"><span>Compass accuracy</span><strong>{sensorAccuracy !== undefined ? `±${Math.round(sensorAccuracy)}°` : compassEnabled ? "waiting" : "fallback"}</strong></div>
             <div className="meta-item"><span>Stability</span><strong>{compassMode === "active" ? stability.label : "fallback"}</strong></div>
-            <div className="meta-item"><span>Location</span><strong>{locationAccuracyMeters ? `${Math.round(locationAccuracyMeters)} m` : "manual/place"}</strong></div>
+            <div className="meta-item"><span>Location accuracy</span><strong>{locationAccuracyMeters ? `${Math.round(locationAccuracyMeters)} m` : "manual/place"}</strong></div>
+            <div className="meta-item"><span>Compass mode</span><strong>{compassMode === "active" ? "Live" : "Bearing only"}</strong></div>
           </div>
 
           <div className="notice compact neutral">
@@ -448,7 +460,7 @@ export default function QiblaPage() {
         </section>
 
         <section className="filter-card qibla-fallback-card">
-          <h3>Fallbacks that always keep Qibla usable</h3>
+          <h3>If location does not load</h3>
           <label>
             Search a place
             <div className="input-action-row">
@@ -497,13 +509,13 @@ export default function QiblaPage() {
         </section>
 
         <section className="info-card qibla-tips">
-          <h3>Accuracy checklist</h3>
+          <h3>Simple accuracy checklist</h3>
           <ol className="tight-list numbered">
-            <li>For phone location/compass, open the deployed HTTPS website, not a local 192.168.x.x development URL.</li>
-            <li>Tap <strong>Use my location</strong>. If it fails, search your area or paste manual coordinates.</li>
-            <li>Tap <strong>Enable compass</strong> only after the page has a location.</li>
-            <li>If the live arrow fails, use the large bearing number with your native compass app.</li>
-            <li>Keep the phone flat and away from metal, chargers, speakers, vehicles, and magnets.</li>
+            <li>Open the deployed HTTPS website on your phone, not a local 192.168.x.x development address.</li>
+            <li>Tap <strong>Use my location</strong>. If it does not work, search your area or enter coordinates manually.</li>
+            <li>Tap <strong>Start compass</strong>, then hold the phone flat.</li>
+            <li>Turn slowly until the <strong>Kaaba marker</strong> reaches the <strong>top guide</strong>.</li>
+            <li>If the moving marker feels unstable, trust the big bearing number and compare it with your normal compass app.</li>
           </ol>
         </section>
 

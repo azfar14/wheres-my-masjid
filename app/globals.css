@@ -2393,3 +2393,229 @@ body.admin-wide-mode main {
     flex-direction: column;
   }
 }
+
+
+/* Qibla compass upgrade: elder-friendly, normal-compass feel, and stronger mobile fit */
+.qibla-hero-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.qibla-saved-action {
+  grid-column: 1 / -1;
+}
+
+.qibla-step-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .55rem;
+  margin-top: 1rem;
+}
+
+.qibla-step {
+  display: grid;
+  gap: .25rem;
+  padding: .72rem;
+  border-radius: 18px;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(4px);
+}
+
+.qibla-step strong {
+  display: inline-grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.18);
+  font-size: .86rem;
+}
+
+.qibla-step span {
+  color: rgba(255,255,255,.92);
+  font-size: .82rem;
+  line-height: 1.3;
+  font-weight: 650;
+}
+
+.qibla-elder-tip {
+  margin: 0;
+  text-align: center;
+  font-size: .92rem;
+  line-height: 1.5;
+}
+
+.elder-compass {
+  position: relative;
+  width: min(84vw, 340px);
+  border-width: 12px;
+  background:
+    radial-gradient(circle at center, #ffffff 0 20%, rgba(236,242,239,.92) 21% 30%, transparent 31%),
+    repeating-conic-gradient(from 0deg, rgba(15,61,46,.18) 0deg 1.4deg, transparent 1.4deg 10deg),
+    linear-gradient(180deg, #fbfdfc, #eef5f1);
+}
+
+.elder-compass::before {
+  content: "";
+  position: absolute;
+  inset: 7%;
+  border-radius: 50%;
+  border: 1px solid rgba(15,61,46,.12);
+}
+
+.compass-top-guide {
+  position: absolute;
+  top: .55rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  color: #c99a3b;
+  font-size: 1.35rem;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(201,154,59,.22);
+}
+
+.qibla-kaaba-track {
+  inset: 10%;
+  display: block;
+}
+
+.qibla-needle-shaft {
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  width: 6px;
+  height: 34%;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #f2d282, #c99a3b 60%, #7a5b17 100%);
+  box-shadow: 0 8px 18px rgba(201,154,59,.25);
+}
+
+.qibla-kaaba-marker {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #1d1d1d, #111111);
+  border: 3px solid #d9b65f;
+  box-shadow: 0 12px 24px rgba(17,17,17,.25);
+  font-size: 1.8rem;
+}
+
+.compass-center-cap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--primary);
+  border: 3px solid #fff;
+  box-shadow: 0 4px 10px rgba(15,61,46,.22);
+  z-index: 4;
+}
+
+.qibla-stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.qibla-manual-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.qibla-fallback-card,
+.qibla-calibration-card,
+.phone-readiness-card,
+.qibla-mode-card,
+.qibla-studio-card,
+.qibla-tips {
+  overflow: hidden;
+}
+
+@media (max-width: 620px) {
+  .qibla-step-strip,
+  .qibla-hero-actions,
+  .qibla-mode-grid,
+  .meta-grid,
+  .field-grid,
+  .qibla-manual-grid,
+  .card-actions,
+  .card-actions.three-actions,
+  .link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card.qibla-hero .hero-title {
+    max-width: none;
+    font-size: clamp(1.7rem, 8vw, 2.4rem);
+  }
+
+  .qibla-main-readout strong {
+    font-size: clamp(2.2rem, 14vw, 4rem);
+  }
+
+  .elder-compass {
+    width: min(88vw, 320px);
+  }
+}
+
+@media (max-width: 420px) {
+  .page-content,
+  main {
+    overflow-x: hidden;
+  }
+
+  .hero-card,
+  .status-card,
+  .card,
+  .form-card,
+  .filter-card,
+  .info-card,
+  .qibla-studio-card {
+    padding-left: .9rem;
+    padding-right: .9rem;
+  }
+
+  .compass-north,
+  .compass-east,
+  .compass-south,
+  .compass-west {
+    font-size: .82rem;
+  }
+
+  .degree-tick {
+    font-size: .56rem;
+  }
+
+  .tick-0 { top: 1.75rem; }
+  .tick-90 { right: 1.65rem; }
+  .tick-180 { bottom: 1.75rem; }
+  .tick-270 { left: 1.65rem; }
+
+  .qibla-kaaba-marker {
+    width: 52px;
+    height: 52px;
+    font-size: 1.55rem;
+  }
+
+  .qibla-needle-shaft {
+    top: 21%;
+    height: 31%;
+  }
+
+  .qibla-step {
+    padding: .68rem;
+  }
+
+  .qibla-step span,
+  .small-text,
+  .notice.compact {
+    font-size: .8rem;
+  }
+}
