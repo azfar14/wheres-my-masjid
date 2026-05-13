@@ -111,13 +111,12 @@ function qiblaPrecisionGrade(locationAccuracy?: number, compassAccuracy?: number
   };
 }
 
-// ... (Keep all other helper functions like qiblaLineUrl, etc. if you use them)
-
+// ================== MAIN COMPONENT ==================
 export default function QiblaPage() {
   const [mounted, setMounted] = useState(false);
   const [notifyClicked, setNotifyClicked] = useState(false);
 
-  // Original states
+  // Original States
   const [location, setLocation] = useState<Coordinates | undefined>();
   const [locationLabel, setLocationLabel] = useState<string | undefined>();
   const [manualLat, setManualLat] = useState("");
@@ -141,23 +140,25 @@ export default function QiblaPage() {
   const [rememberedLabel, setRememberedLabel] = useState<string | undefined>();
   const headingSeenRef = useRef(false);
 
-  // ... Paste all your original useEffect, applyLocation, requestLocation, enableCompass, searchPlace, etc. functions here ...
+  // ================== YOUR ORIGINAL LOGIC ==================
+  useEffect(() => {
+    setMounted(true);
+    // Paste your original useEffect code here if needed
+  }, []);
 
   const qiblaBearing = useMemo(() => (location ? calculateQiblaBearing(location) : undefined), [location]);
   const arrowRotation = useMemo(() => (qiblaBearing !== undefined ? relativeQiblaArrowRotation(qiblaBearing, heading) : 0), [heading, qiblaBearing]);
   const distance = useMemo(() => (location ? qiblaDistanceKm(location) : undefined), [location]);
-  const instruction = turnInstruction(qiblaBearing, heading);
   const qiblaCardLabel = qiblaBearing !== undefined ? `${formatDegrees(qiblaBearing)} ${compassDirectionLabel(qiblaBearing)}` : "—";
   const secure = mounted ? isBrowserSecureContext() : false;
   const support = mounted ? compassSupportMessage() : { ok: false, message: "Checking phone support…" };
   const stability = useMemo(() => compassStability(headingSamples, sensorAccuracy), [headingSamples, sensorAccuracy]);
   const precisionGrade = qiblaPrecisionGrade(locationAccuracyMeters, sensorAccuracy, compassMode);
-  const liveArrowTrusted = precisionGrade.safeForLiveArrow && (compassMode !== "active" || stability.stable);
 
   const handleNotifyMe = () => {
     setNotifyClicked(true);
     setTimeout(() => {
-      alert("Thank you! We'll notify you as soon as the improved Qibla feature is ready.");
+      alert("Thank you! We'll notify you when the new Qibla feature is ready.");
       setNotifyClicked(false);
     }, 800);
   };
@@ -167,19 +168,22 @@ export default function QiblaPage() {
       <AppHeader />
 
       <main className="relative">
-        {/* LIGHT TRANSLUCENT OVERLAY */}
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+        {/* Light Translucent Background */}
+        <div className="absolute inset-0 z-40 bg-black/25 backdrop-blur-sm" />
+
+        {/* Overlay Content */}
+        <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-auto">
           <div className="text-center px-6 max-w-md">
             <div className="mx-auto mb-6 w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center border border-white/30">
               <span className="text-5xl">🕋</span>
             </div>
 
-            <h2 className="text-3xl font-semibold text-white mb-2 tracking-tight">
+            <h2 className="text-3xl font-semibold text-white mb-3 tracking-tight">
               Work in Progress
             </h2>
             
-            <p className="text-white/95 text-[17px] leading-relaxed mb-8">
-              Our team is actively working on a much better Qibla experience with improved accuracy and new features.
+            <p className="text-white/95 text-[17px] leading-relaxed mb-8 max-w-xs mx-auto">
+              Our team is actively building a much better Qibla experience with improved accuracy and new features.
             </p>
 
             <div className="inline-flex items-center gap-2 bg-white/10 text-white/90 text-sm px-5 py-2.5 rounded-2xl border border-white/20 backdrop-blur-md mb-8">
@@ -190,7 +194,7 @@ export default function QiblaPage() {
             <button
               onClick={handleNotifyMe}
               disabled={notifyClicked}
-              className="w-full bg-white text-black font-medium py-3.5 rounded-2xl hover:bg-white/95 transition-all active:scale-[0.985] disabled:opacity-70 shadow-lg"
+              className="w-full bg-white hover:bg-amber-50 text-black font-semibold py-4 rounded-2xl text-lg shadow-xl hover:shadow-2xl transition-all duration-200 active:scale-[0.97] disabled:opacity-75"
             >
               {notifyClicked ? "Thank you ✨" : "Notify Me When Ready"}
             </button>
@@ -201,7 +205,7 @@ export default function QiblaPage() {
           </div>
         </div>
 
-        {/* HERO SECTION */}
+        {/* Main Content (Visible under overlay) */}
         <section className="hero-card qibla-hero upgraded-qibla-hero ultra-qibla-hero qibla-command-hero pointer-events-none">
           <p className="kicker">Easy Qibla compass</p>
           <h2 className="hero-title">A simple Qibla compass with a clear Kaaba marker that is easy to follow on your phone.</h2>
@@ -214,9 +218,9 @@ export default function QiblaPage() {
           </div>
 
           <div className="cta-row qibla-hero-actions">
-            <button className="button opacity-70 cursor-not-allowed" type="button" disabled>Use my location</button>
-            <button className="secondary-button opacity-70 cursor-not-allowed" type="button" disabled>Start compass</button>
-            {rememberedLabel && <button className="ghost-button qibla-saved-action opacity-70 cursor-not-allowed" type="button" disabled>Use saved location</button>}
+            <button className="button opacity-75 cursor-not-allowed" type="button" disabled>Use my location</button>
+            <button className="secondary-button opacity-75 cursor-not-allowed" type="button" disabled>Start compass</button>
+            {rememberedLabel && <button className="ghost-button qibla-saved-action opacity-75 cursor-not-allowed" type="button" disabled>Use saved location</button>}
           </div>
 
           <div className="qibla-step-strip pointer-events-none">
@@ -226,8 +230,7 @@ export default function QiblaPage() {
           </div>
         </section>
 
-        {/* Add pointer-events-none opacity-95 to all other sections as needed */}
-        {/* Paste the rest of your original sections here (info-card, qibla-studio-card, filter-card, etc.) */}
+        {/* Paste the rest of your original sections here with pointer-events-none opacity-95 */}
 
         <div className="footer-space" />
       </main>

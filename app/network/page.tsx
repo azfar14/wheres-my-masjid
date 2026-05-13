@@ -73,17 +73,6 @@ export default function NetworkPage() {
           </article>
         </section>
 
-        <section className="info-card">
-          <h3>Launch checklist for each locality</h3>
-          <div className="timing-grid network-check-grid">
-            <div className="timing-cell"><span>Minimum verified masjids</span><strong>10+</strong></div>
-            <div className="timing-cell"><span>Jamaat timings</span><strong>All 5 salah</strong></div>
-            <div className="timing-cell"><span>Jumu’ah</span><strong>Listed</strong></div>
-            <div className="timing-cell"><span>Claim owner</span><strong>Committee/admin</strong></div>
-            <div className="timing-cell"><span>Freshness</span><strong>Checked monthly</strong></div>
-          </div>
-          <p className="small-text">Current listings needing verification: {needsVerification.length}. Convert external candidates into Firestore listings from suggestions/admin, then mark them verified only after local confirmation.</p>
-        </section>
 
         <div className="footer-space" />
       </main>
