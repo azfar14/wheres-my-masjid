@@ -173,10 +173,10 @@ export default function QiblaPage() {
 
         {/* Overlay Content */}
         <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-auto">
-          <div className="text-center px-6 max-w-md">
-            <div className="mx-auto mb-6 w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center border border-white/30">
-              <span className="text-5xl">🕋</span>
-            </div>
+  <div className="text-center px-6 max-w-md">
+    <div className="mx-auto mb-6 w-40 h-40 rounded-3xl bg-white/10 flex items-center justify-center border border-white/30">
+  <span className="text-9xl">🕋</span>
+</div>
 
             <h2 className="text-3xl font-semibold text-white mb-3 tracking-tight">
               Work in Progress
@@ -191,13 +191,7 @@ export default function QiblaPage() {
               Coming Soon
             </div>
 
-            <button
-              onClick={handleNotifyMe}
-              disabled={notifyClicked}
-              className="w-full bg-white hover:bg-amber-50 text-black font-semibold py-4 rounded-2xl text-lg shadow-xl hover:shadow-2xl transition-all duration-200 active:scale-[0.97] disabled:opacity-75"
-            >
-              {notifyClicked ? "Thank you ✨" : "Notify Me When Ready"}
-            </button>
+           
 
             <p className="text-white/70 text-sm mt-6">
               Thank you for your patience
