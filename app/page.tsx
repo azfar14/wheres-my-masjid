@@ -53,8 +53,8 @@ export default function HomePage() {
       saveDiscoveredMasjids(nearbyOnly);
       setDiscoveryMessage(
         nearbyOnly.length
-          ? `Found ${nearbyOnly.length} nearby listing${nearbyOnly.length === 1 ? "" : "s"} within ${radiusUsed} km. Open Nearby to change radius or debug providers.`
-          : `No masjid found within ${radiusUsed} km. Open Nearby to try 10 km/25 km, check QA, or report the exact pin.`
+          ? `Mappls/Foursquare discovery checked ${radiusUsed} km and found ${nearbyOnly.length} nearby listing${nearbyOnly.length === 1 ? "" : "s"}.`
+          : `Mappls/Foursquare discovery checked ${radiusUsed} km. Try Nearby for a wider radius or report the exact pin.`
       );
       if (result.errors.length || result.diagnostics.length) setDiscoveryError([...result.errors, ...result.diagnostics.slice(0, 5)].join(" · "));
     } catch (error) {
@@ -133,7 +133,7 @@ export default function HomePage() {
   return (
     <>
       <AppHeader />
-      <main>
+      <main className="home-page safe-layout-page">
         <section className="hero-card home-command-hero">
           <p className="kicker">Location-first masjid finder</p>
           <h2 className="hero-title">Nearby masjids, distance, and Qibla — from your exact location.</h2>
@@ -166,7 +166,7 @@ export default function HomePage() {
           onLocate={requestLocation}
         />
 
-        {discoveryMessage && <div className="notice success compact">{discoveryMessage}</div>}
+        {discoveryMessage && <div className="provider-discovery-note home-discovery-note" role="status" aria-live="polite"><strong>Discovery:</strong><span>{discoveryMessage}</span></div>}
         {discoveryError && <div className="notice neutral compact">{discoveryError}</div>}
 
         {bestOption && (

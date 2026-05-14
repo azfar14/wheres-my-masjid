@@ -391,7 +391,7 @@ export default function NearbyPage() {
   return (
     <>
       <AppHeader />
-      <main>
+      <main className="nearby-page safe-layout-page">
         <div className="section-head">
           <div>
             <h2>Nearby masjids</h2>
@@ -649,8 +649,10 @@ export default function NearbyPage() {
               ))}
             </div>
           )}
-          <p className="small-text">Best coverage model: Firestore for verified jamaat timings, optional Google Places for Google Maps POIs, Mappls/Foursquare for extra coverage, OpenStreetMap fallback, and exact-pin community reports.</p>
-          <p className="small-text">Mappls/Foursquare keys improve coverage. Google Places is optional if you need the same mosque POIs that appear inside Google Maps. Without provider keys, the app depends mostly on Firestore + OpenStreetMap fallback.</p>
+          <div className="provider-discovery-note" role="status" aria-live="polite">
+            <strong>Mappls/Foursquare discovery:</strong>
+            <span>Extra provider keys add more mosque candidates. Verified Firestore timings stay the trusted source; unverified provider pins still ask users to confirm in Maps.</span>
+          </div>
 
           <div className="card-actions three-actions utility-actions">
             {location && <a className="ghost-button" href={googleMapsNearbyMasjidSearchUrl(location)} target="_blank" rel="noreferrer">Google Maps nearby</a>}

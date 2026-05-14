@@ -10,10 +10,11 @@ export function AppHeader() {
           <p>Find jamaat near you</p>
         </span>
       </Link>
-      
+      <nav className="header-actions clean-header-actions" aria-label="Main shortcuts">
+        <Link className="header-chip" href="/nearby">Nearby</Link>
+        <Link className="header-chip" href="/qibla">Qibla</Link>
+        <Link className="header-chip" href="/network">Network</Link>
+      </nav>
     </header>
   );
 }
-
-
-

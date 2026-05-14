@@ -19,7 +19,7 @@ export default function NetworkPage() {
   return (
     <>
       <AppHeader />
-      <main>
+      <main className="network-page safe-layout-page">
         <section className="hero-card network-hero">
           <p className="kicker">300-crore moat</p>
           <h2 className="hero-title">Build the trusted masjid network, not just another map.</h2>
@@ -37,8 +37,8 @@ export default function NetworkPage() {
 
         <DataStatus source={source} message={message} isLoading={isLoading} />
 
-        <section className="info-card">
-          <div className="section-inline-head">
+        <section className="info-card network-health-card">
+          <div className="section-inline-head network-health-head">
             <div>
               <h3>Verified network health</h3>
               <p className="small-text">This is the part competitors cannot copy quickly: real jamaat data maintained by real masjid people.</p>
@@ -46,7 +46,7 @@ export default function NetworkPage() {
             <strong className="network-score">{coverageScore}/100</strong>
           </div>
           <div className="trust-meter"><span style={{ width: `${coverageScore}%` }} /></div>
-          <div className="meta-grid">
+          <div className="meta-grid network-stat-grid">
             <div className="meta-item"><span>Admin verified</span><strong>{verified.length}</strong></div>
             <div className="meta-item"><span>Community checked</span><strong>{community.length}</strong></div>
             <div className="meta-item"><span>Jamaat ready</span><strong>{timingReady.length}</strong></div>
@@ -73,6 +73,17 @@ export default function NetworkPage() {
           </article>
         </section>
 
+        <section className="info-card network-checklist-card">
+          <h3>Launch checklist for each locality</h3>
+          <div className="timing-grid network-check-grid">
+            <div className="timing-cell"><span>Minimum verified masjids</span><strong>10+</strong></div>
+            <div className="timing-cell"><span>Jamaat timings</span><strong>All 5 salah</strong></div>
+            <div className="timing-cell"><span>Jumu’ah</span><strong>Listed</strong></div>
+            <div className="timing-cell"><span>Claim owner</span><strong>Committee/admin</strong></div>
+            <div className="timing-cell"><span>Freshness</span><strong>Checked monthly</strong></div>
+          </div>
+          <p className="small-text">Current listings needing verification: {needsVerification.length}. Convert external candidates into Firestore listings from suggestions/admin, then mark them verified only after local confirmation.</p>
+        </section>
 
         <div className="footer-space" />
       </main>

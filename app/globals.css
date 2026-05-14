@@ -2394,228 +2394,508 @@ body.admin-wide-mode main {
   }
 }
 
-
-/* Qibla compass upgrade: elder-friendly, normal-compass feel, and stronger mobile fit */
-.qibla-hero-actions {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Layout perfection pass: stop mobile overflow/overlap on Nearby, Network, Home, and Qibla */
+html,
+body,
+.page-shell {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-.qibla-saved-action {
-  grid-column: 1 / -1;
+.app-header,
+.safe-layout-page,
+.nearby-page,
+.network-page,
+.home-page,
+.qibla-page {
+  min-width: 0;
+  overflow-x: clip;
 }
 
-.qibla-step-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: .55rem;
-  margin-top: 1rem;
+.app-header *,
+.safe-layout-page *,
+.masjid-card *,
+.info-card *,
+.filter-card *,
+.notice,
+.provider-health-card,
+.provider-discovery-note {
+  min-width: 0;
 }
 
-.qibla-step {
-  display: grid;
-  gap: .25rem;
-  padding: .72rem;
-  border-radius: 18px;
-  background: rgba(255,255,255,.12);
-  backdrop-filter: blur(4px);
+p,
+span,
+strong,
+small,
+h1,
+h2,
+h3,
+label,
+.notice,
+.source-line,
+.clean-source-line,
+.provider-health-card,
+.provider-discovery-note {
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
-.qibla-step strong {
-  display: inline-grid;
-  place-items: center;
-  width: 1.7rem;
-  height: 1.7rem;
-  border-radius: 999px;
-  background: rgba(255,255,255,.18);
-  font-size: .86rem;
+.button,
+.secondary-button,
+.ghost-button,
+.header-chip,
+.quick-action,
+.place-result,
+.save-chip {
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.18;
 }
 
-.qibla-step span {
-  color: rgba(255,255,255,.92);
-  font-size: .82rem;
-  line-height: 1.3;
-  font-weight: 650;
+.app-header {
+  flex-wrap: wrap;
 }
 
-.qibla-elder-tip {
-  margin: 0;
-  text-align: center;
-  font-size: .92rem;
-  line-height: 1.5;
+.brand {
+  flex: 1 1 170px;
+  min-width: 0;
 }
 
-.elder-compass {
-  position: relative;
-  width: min(84vw, 340px);
-  border-width: 12px;
-  background:
-    radial-gradient(circle at center, #ffffff 0 20%, rgba(236,242,239,.92) 21% 30%, transparent 31%),
-    repeating-conic-gradient(from 0deg, rgba(15,61,46,.18) 0deg 1.4deg, transparent 1.4deg 10deg),
-    linear-gradient(180deg, #fbfdfc, #eef5f1);
+.brand h1,
+.brand p {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.elder-compass::before {
-  content: "";
-  position: absolute;
-  inset: 7%;
-  border-radius: 50%;
-  border: 1px solid rgba(15,61,46,.12);
+.clean-header-actions {
+  flex: 1 1 190px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
-.compass-top-guide {
-  position: absolute;
-  top: .55rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 5;
-  color: #c99a3b;
-  font-size: 1.35rem;
-  line-height: 1;
-  text-shadow: 0 2px 8px rgba(201,154,59,.22);
+.header-chip {
+  flex: 0 1 auto;
+  white-space: nowrap;
 }
 
-.qibla-kaaba-track {
-  inset: 10%;
-  display: block;
-}
-
-.qibla-needle-shaft {
-  position: absolute;
-  left: 50%;
-  top: 18%;
-  width: 6px;
-  height: 34%;
-  border-radius: 999px;
-  transform: translateX(-50%);
-  background: linear-gradient(180deg, #f2d282, #c99a3b 60%, #7a5b17 100%);
-  box-shadow: 0 8px 18px rgba(201,154,59,.25);
-}
-
-.qibla-kaaba-marker {
-  position: absolute;
-  left: 50%;
-  top: 4%;
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  border-radius: 18px;
-  transform: translateX(-50%);
-  background: linear-gradient(180deg, #1d1d1d, #111111);
-  border: 3px solid #d9b65f;
-  box-shadow: 0 12px 24px rgba(17,17,17,.25);
-  font-size: 1.8rem;
-}
-
-.compass-center-cap {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--primary);
-  border: 3px solid #fff;
-  box-shadow: 0 4px 10px rgba(15,61,46,.22);
-  z-index: 4;
-}
-
+.cta-row,
+.premium-cta-row,
+.card-actions,
+.card-actions.two-actions,
+.card-actions.three-actions,
+.field-grid,
+.filter-chip-grid,
+.quick-action-grid,
+.meta-grid,
 .qibla-stats-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.qibla-manual-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.meta-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.qibla-fallback-card,
-.qibla-calibration-card,
-.phone-readiness-card,
-.qibla-mode-card,
-.qibla-studio-card,
-.qibla-tips {
+.timing-grid,
+.network-check-grid {
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+}
+
+.network-check-grid {
+  gap: 0.5rem;
+}
+
+.input-action-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.input-action-row input,
+.input-action-row textarea,
+.input-action-row select {
+  min-width: 0;
+}
+
+.provider-health-grid,
+.network-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.results-summary-card,
+.filter-reset-card,
+.section-inline-head,
+.masjid-top,
+.detail-title,
+.ad-slot-content {
+  min-width: 0;
+}
+
+.results-summary-card span,
+.navigation-summary-card span,
+.navigation-summary-card p,
+.provider-health-card small {
+  overflow-wrap: anywhere;
+}
+
+.provider-discovery-note {
+  display: grid;
+  gap: 0.18rem;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(201, 154, 59, 0.24);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 250, 238, 0.94), rgba(223, 236, 229, 0.7));
+  color: var(--primary);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.provider-discovery-note strong {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.provider-discovery-note span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.home-discovery-note {
+  margin: 0 0 1rem;
+}
+
+.network-health-card,
+.network-checklist-card {
   overflow: hidden;
 }
 
-@media (max-width: 620px) {
-  .qibla-step-strip,
-  .qibla-hero-actions,
-  .qibla-mode-grid,
-  .meta-grid,
+.network-health-head {
+  align-items: center;
+}
+
+.network-score {
+  flex: 0 0 auto;
+}
+
+.network-stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.network-grid .info-card {
+  height: 100%;
+}
+
+.timing-cell,
+.meta-item,
+.provider-health-card,
+.place-result,
+.quick-action {
+  overflow: hidden;
+}
+
+@media (max-width: 520px) {
+  main {
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .input-action-row,
   .field-grid,
-  .qibla-manual-grid,
-  .card-actions,
-  .card-actions.three-actions,
-  .link-grid {
+  .network-grid,
+  .provider-health-grid {
     grid-template-columns: 1fr;
   }
 
-  .hero-card.qibla-hero .hero-title {
-    max-width: none;
-    font-size: clamp(1.7rem, 8vw, 2.4rem);
+  .section-inline-head {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .qibla-main-readout strong {
-    font-size: clamp(2.2rem, 14vw, 4rem);
-  }
-
-  .elder-compass {
-    width: min(88vw, 320px);
+  .network-stat-grid,
+  .meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 420px) {
-  .page-content,
-  main {
-    overflow-x: hidden;
+@media (max-width: 430px) {
+  .app-header {
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
   }
 
-  .hero-card,
-  .status-card,
-  .card,
-  .form-card,
-  .filter-card,
-  .info-card,
-  .qibla-studio-card {
-    padding-left: .9rem;
-    padding-right: .9rem;
+  .clean-header-actions {
+    flex: 1 1 100%;
+    justify-content: stretch;
   }
 
-  .compass-north,
-  .compass-east,
-  .compass-south,
-  .compass-west {
-    font-size: .82rem;
+  .header-chip {
+    flex: 1 1 0;
+    min-height: 2.1rem;
+    padding: 0 0.45rem;
+    font-size: 0.72rem;
   }
 
-  .degree-tick {
-    font-size: .56rem;
+  .filter-chip-grid,
+  .card-actions.three-actions,
+  .qibla-stats-grid {
+    grid-template-columns: 1fr;
   }
 
-  .tick-0 { top: 1.75rem; }
-  .tick-90 { right: 1.65rem; }
-  .tick-180 { bottom: 1.75rem; }
-  .tick-270 { left: 1.65rem; }
-
-  .qibla-kaaba-marker {
-    width: 52px;
-    height: 52px;
-    font-size: 1.55rem;
+  .premium-cta-row,
+  .quick-action-grid,
+  .card-actions.two-actions,
+  .card-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .qibla-needle-shaft {
-    top: 21%;
-    height: 31%;
+  .timing-grid,
+  .network-check-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .qibla-step {
-    padding: .68rem;
+  .results-summary-card {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 350px) {
+  .premium-cta-row,
+  .quick-action-grid,
+  .card-actions,
+  .card-actions.two-actions,
+  .meta-grid,
+  .network-stat-grid,
+  .timing-grid,
+  .network-check-grid {
+    grid-template-columns: 1fr;
   }
 
-  .qibla-step span,
-  .small-text,
-  .notice.compact {
-    font-size: .8rem;
+  .results-summary-card {
+    display: grid;
+  }
+}
+
+/* Real compass/Qibla marker pass */
+.real-qibla-compass {
+  max-width: 100%;
+  isolation: isolate;
+}
+
+.compass-rose {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transform-origin: center;
+  transition: transform 0.25s ease-out;
+  z-index: 1;
+}
+
+.compass-center-pin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(15, 61, 46, 0.12);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 1000;
+  box-shadow: 0 10px 24px rgba(18, 35, 29, 0.14);
+}
+
+.makkah-arrow {
+  inset: 7%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.makkah-arrow::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 38%;
+  border-radius: 999px;
+  transform: translate(-50%, -100%);
+  background: linear-gradient(180deg, var(--accent), var(--primary));
+  box-shadow: 0 12px 24px rgba(15, 61, 46, 0.18);
+}
+
+.makkah-arrow span {
+  position: relative;
+  top: auto;
+  left: auto;
+  z-index: 2;
+  transform: none;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border: 3px solid rgba(255, 255, 255, 0.92);
+  border-radius: 26px;
+  background: linear-gradient(180deg, #fff5d6, var(--accent));
+  color: #1f1605;
+  font-size: 2.05rem;
+  line-height: 1;
+  box-shadow: 0 18px 36px rgba(201, 154, 59, 0.34);
+}
+
+.makkah-arrow span::after {
+  content: "Makkah";
+  position: absolute;
+  left: 50%;
+  bottom: -1.18rem;
+  transform: translateX(-50%);
+  padding: 0.12rem 0.42rem;
+  border-radius: 999px;
+  background: rgba(15, 61, 46, 0.9);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 1000;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .premium-compass {
+    width: min(84vw, 300px);
+    border-width: 10px;
+  }
+
+  .makkah-arrow span {
+    width: 62px;
+    height: 62px;
+    border-radius: 22px;
+    font-size: 1.75rem;
+  }
+
+  .compass-center-pin {
+    width: 42px;
+    height: 42px;
+    font-size: 0.62rem;
+  }
+}
+
+.makkah-arrow.pending {
+  opacity: 0.48;
+}
+
+.makkah-arrow.pending span::after {
+  content: "Set location";
+}
+
+/* Final phone-shell correction + compact discovery info */
+body {
+  min-height: 100vh;
+}
+
+body:not(.admin-wide-mode) .page-shell {
+  width: min(100%, 430px);
+  max-width: 430px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 760px) {
+  body:not(.admin-wide-mode) .page-shell {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    min-height: calc(100vh - 2rem);
+    border: 1px solid var(--border);
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.34));
+  }
+}
+
+.card-status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .45rem;
+}
+
+.info-mini-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .32rem .56rem;
+  border-radius: 999px;
+  background: rgba(15,61,46,.08);
+  color: var(--primary);
+  font-size: .69rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.info-mini-chip.warn {
+  background: #fff2d7;
+  color: #7a5800;
+}
+
+.info-mini-chip.soft {
+  background: #edf6ff;
+  color: #174c7a;
+}
+
+.card-inline-note {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .58rem;
+  align-items: start;
+  margin-top: .6rem;
+  padding: .72rem .78rem;
+  border: 1px solid rgba(15,61,46,.1);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(223,236,229,.52), rgba(255,255,255,.94));
+}
+
+.info-inline-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: rgba(15,61,46,.1);
+  color: var(--primary);
+  font-size: .9rem;
+  font-weight: 1000;
+}
+
+.card-inline-note strong {
+  display: block;
+  color: var(--primary);
+  font-size: .78rem;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.card-inline-note small {
+  display: block;
+  margin-top: .18rem;
+  color: var(--muted);
+  font-size: .76rem;
+  line-height: 1.35;
+}
+
+.provider-inline-note {
+  border-color: rgba(23,76,122,.14);
+  background: linear-gradient(135deg, rgba(238,247,255,.96), rgba(255,255,255,.94));
+}
+
+@media (max-width: 430px) {
+  .card-inline-note {
+    padding: .68rem .72rem;
   }
 }
