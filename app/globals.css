@@ -2899,3 +2899,290 @@ body:not(.admin-wide-mode) .page-shell {
     padding: .68rem .72rem;
   }
 }
+
+/* Public-safe network + proper masjid claim workflow */
+.claim-hero {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(201,154,59,.34), transparent 8rem),
+    linear-gradient(145deg, #0f3d2e, #0b2f24 62%, #173d31);
+}
+
+.claim-page .info-card,
+.claim-page .form-card {
+  margin-bottom: 1rem;
+}
+
+.claim-security-card {
+  border-left: 5px solid var(--accent);
+  background:
+    radial-gradient(circle at 92% 0%, rgba(201,154,59,.14), transparent 9rem),
+    rgba(255,255,255,.94);
+}
+
+.claim-process-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem;
+  margin-top: .85rem;
+}
+
+.claim-step-card {
+  display: grid;
+  gap: .35rem;
+  min-width: 0;
+  padding: .85rem;
+  border: 1px solid rgba(15,61,46,.12);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fff, rgba(223,236,229,.34));
+  box-shadow: 0 10px 24px rgba(18,35,29,.05);
+}
+
+.claim-step-card span {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(15,61,46,.1);
+  color: var(--primary);
+  font-weight: 1000;
+}
+
+.claim-step-card strong {
+  color: var(--primary);
+  font-weight: 950;
+}
+
+.claim-step-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.38;
+}
+
+.claim-form h3 {
+  margin: 0;
+}
+
+.claim-declaration {
+  align-items: flex-start;
+  padding: .75rem;
+  border: 1px solid rgba(201,154,59,.28);
+  border-radius: 16px;
+  background: rgba(255,248,226,.72);
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.claim-declaration input {
+  margin-top: .18rem;
+}
+
+@media (max-width: 430px) {
+  .claim-process-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Footer + masjid operations machine pass */
+.app-footer {
+  display: grid;
+  gap: 0.18rem;
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(229, 221, 207, 0.72);
+  background: rgba(255, 252, 245, 0.76);
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.app-footer a {
+  color: var(--primary);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.masjid-os-hero {
+  background:
+    radial-gradient(circle at 86% 10%, rgba(201,154,59,.32), transparent 8rem),
+    linear-gradient(145deg, #0f3d2e, #0b2f24 64%, #173f32);
+}
+
+.masjid-os-grid {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.acquisition-machine-card {
+  background:
+    radial-gradient(circle at top right, rgba(201,154,59,.16), transparent 9rem),
+    linear-gradient(135deg, rgba(223,236,229,.86), rgba(255,255,255,.96));
+}
+
+.machine-loop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+}
+
+.machine-loop-grid article {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(15,61,46,.1);
+  border-radius: 16px;
+  background: rgba(255,255,255,.82);
+}
+
+.machine-loop-grid strong {
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.machine-loop-grid span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.my-masjids-page .field-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .masjid-os-grid,
+  .machine-loop-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-footer {
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .my-masjids-page .field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Global credits footer + masjid operations dashboard */
+.app-footer {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0.5rem 1rem 0;
+  padding: 1rem 0.85rem calc(1rem + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(15, 61, 46, 0.1);
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.app-footer a {
+  color: var(--primary);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.masjid-admin-hero {
+  background:
+    radial-gradient(circle at 88% 8%, rgba(201, 154, 59, 0.34), transparent 9rem),
+    linear-gradient(145deg, #0f3d2e, #08291f 66%, #173f32);
+}
+
+.masjid-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  align-items: start;
+  margin: 1rem 0;
+}
+
+.timing-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.65rem;
+}
+
+.announcement-publisher {
+  margin-top: 1rem;
+  border-color: rgba(201, 154, 59, 0.28);
+  background: linear-gradient(135deg, rgba(255, 250, 238, 0.96), rgba(255, 255, 255, 0.94));
+}
+
+.announcement-list {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.7rem;
+}
+
+.announcement-card {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(15, 61, 46, 0.12);
+  border-left: 5px solid var(--primary);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 24px rgba(18, 35, 29, 0.06);
+}
+
+.announcement-card span {
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 1000;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.announcement-card strong {
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+
+.announcement-card p,
+.announcement-card small {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.announcement-card.important {
+  border-left-color: var(--gold);
+  background: linear-gradient(135deg, #fff8df, #fff);
+}
+
+.announcement-card.urgent {
+  border-left-color: var(--danger);
+  background: linear-gradient(135deg, #fff0e8, #fff);
+}
+
+@media (max-width: 430px) {
+  .app-footer {
+    margin-left: 0.85rem;
+    margin-right: 0.85rem;
+    font-size: 0.7rem;
+  }
+
+  .masjid-admin-grid,
+  .timing-edit-grid {
+    grid-template-columns: 1fr;
+  }
+}

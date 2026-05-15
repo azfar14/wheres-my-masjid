@@ -19,7 +19,7 @@ export default function LaunchPage() {
   const checklist = [
     { label: "10+ verified masjid pins in the first launch area", done: readiness.verifiedCount >= 10 },
     { label: "10+ verified jamaat timing sets", done: readiness.verifiedWithTimingsCount >= 10 },
-    { label: "External provider discovery passes in /qa", done: true, note: "Run /qa for your exact coordinates before inviting users." },
+    { label: "External provider discovery reviewed privately", done: true, note: "Use the admin verification dashboard and real phone tests before inviting users." },
     { label: "Google navigation tested for every verified masjid", done: false, note: "Open every verified listing and test the Start nav button." },
     { label: "Qibla tested on phone HTTPS", done: false, note: "Deploy to Vercel first; do not judge Qibla from local LAN." },
     { label: "Firestore rules published", done: false },
@@ -77,7 +77,7 @@ export default function LaunchPage() {
           </ol>
           <div className="cta-row">
             <Link className="button" href="/admin">Open admin</Link>
-            <Link className="secondary-button" href="/qa">Run QA</Link>
+            <Link className="secondary-button" href="/admin/verification">Verification dashboard</Link>
             <Link className="ghost-button" href="/nearby">Test nearby</Link>
           </div>
         </section>

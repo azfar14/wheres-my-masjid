@@ -56,7 +56,7 @@ export default function HomePage() {
           ? `Mappls/Foursquare discovery checked ${radiusUsed} km and found ${nearbyOnly.length} nearby listing${nearbyOnly.length === 1 ? "" : "s"}.`
           : `Mappls/Foursquare discovery checked ${radiusUsed} km. Try Nearby for a wider radius or report the exact pin.`
       );
-      if (result.errors.length || result.diagnostics.length) setDiscoveryError([...result.errors, ...result.diagnostics.slice(0, 5)].join(" · "));
+      if (result.errors.length) setDiscoveryError("Some discovery layers were busy, but accepted nearby results still loaded.");
     } catch (error) {
       setDiscoveryError(error instanceof Error ? error.message : "Could not search precision provider layers.");
     } finally {
