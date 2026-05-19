@@ -7,7 +7,6 @@ import { AppHeader } from "@/components/AppHeader";
 import { DataStatus } from "@/components/DataStatus";
 import { AdSlot } from "@/components/AdSlot";
 import { useMasjid } from "@/hooks/useMasjids";
-import { listMasjidAnnouncements } from "@/lib/masjidService";
 import { displayDistanceKm, exactMapUrlForMasjid, formatDistance, openStreetMapObjectUrl, walkingMinutes, distanceKm } from "@/lib/geo";
 import { getMasjidNavigationAction } from "@/lib/navigationTrust";
 import { formatCountdown, getNextJamaat, salahDisplayNames, salahOrder } from "@/lib/jamaat";
@@ -16,7 +15,7 @@ import { isSavedMasjid, toggleSavedMasjid } from "@/lib/savedMasjids";
 import { calculateTrustScore } from "@/lib/trustScore";
 import { readRememberedLocation } from "@/lib/locationMemory";
 import { displayMasjidLocality, displayMasjidName, displaySourceBadge, displayTrustLabel, displayVerificationNotice, sourceClassName } from "@/lib/masjidDisplay";
-import type { Coordinates, MasjidAnnouncement } from "@/types";
+import type { Coordinates } from "@/types";
 import {
   hasVerifiedTimings,
   isExternalDiscoveredListing,
@@ -35,7 +34,6 @@ export default function MasjidDetailPage() {
   const [saved, setSaved] = useState(false);
   const [origin, setOrigin] = useState<Coordinates | undefined>();
   const [originLabel, setOriginLabel] = useState<string | undefined>();
-  const [announcements, setAnnouncements] = useState<MasjidAnnouncement[]>([]);
 
   useEffect(() => {
     if (masjid) setSaved(isSavedMasjid(masjid.id));
@@ -44,25 +42,6 @@ export default function MasjidDetailPage() {
       setOrigin(remembered.coordinates);
       setOriginLabel(remembered.label ?? "saved location");
     }
-  }, [masjid]);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function loadAnnouncements() {
-      if (!masjid) {
-        setAnnouncements([]);
-        return;
-      }
-      try {
-        const nextAnnouncements = await listMasjidAnnouncements(masjid.id);
-        if (!cancelled) setAnnouncements(nextAnnouncements);
-      } catch {
-        if (!cancelled) setAnnouncements([]);
-      }
-    }
-
-    void loadAnnouncements();
-    return () => { cancelled = true; };
   }, [masjid]);
 
   if (isLoading) {
@@ -158,11 +137,10 @@ export default function MasjidDetailPage() {
           </div>
 
           <div className="card-actions three-actions utility-actions">
-            <Link className="ghost-button" href={`/claim/${masjid.id}`}>Claim this masjid</Link>
+            <Link className="ghost-button" href={`/claim/${masjid.id}`}>Claim</Link>
             <Link className="ghost-button" href={`/qibla?lat=${masjid.coordinates.lat}&lng=${masjid.coordinates.lng}&label=${encodeURIComponent(displayName)}`}>Qibla</Link>
             {isOsm ? <a className="ghost-button" href={openStreetMapObjectUrl(masjid)} target="_blank" rel="noreferrer">OSM raw pin</a> : <a className="ghost-button" href={exactMapUrlForMasjid(masjid)} target="_blank" rel="noreferrer">Maps check</a>}
           </div>
-          <Link className="ghost-button full compact-button" href="/my-masjids">Already approved? Open masjid dashboard</Link>
         </section>
 
         <div className="info-stack">
@@ -184,22 +162,6 @@ export default function MasjidDetailPage() {
           </section>
 
           <AdSlot placement="masjid-profile" />
-
-          {announcements.length > 0 && (
-            <section className="info-card announcement-list-card">
-              <h3>Masjid announcements</h3>
-              <div className="announcement-list">
-                {announcements.slice(0, 4).map((announcement) => (
-                  <article className={`announcement-card ${announcement.priority}`} key={announcement.id}>
-                    <span>{announcement.priority}</span>
-                    <strong>{announcement.title}</strong>
-                    <p>{announcement.message}</p>
-                    {announcement.expiresAt && <small>Visible until {announcement.expiresAt}</small>}
-                  </article>
-                ))}
-              </div>
-            </section>
-          )}
 
           <section className="info-card">
             <h3>Today’s jamaat timings</h3>

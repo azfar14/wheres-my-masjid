@@ -54,13 +54,6 @@ service cloud.firestore {
       allow delete: if isOwner();
     }
 
-    match /masjidAnnouncements/{announcementId} {
-      allow read: if true;
-      allow create: if canManageMasjid(request.resource.data.masjidId);
-      allow update: if canManageMasjid(resource.data.masjidId) || canManageMasjid(request.resource.data.masjidId);
-      allow delete: if isOwner();
-    }
-
 
     match /notificationTokens/{tokenId} {
       allow create: if true;

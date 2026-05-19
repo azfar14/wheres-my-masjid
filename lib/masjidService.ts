@@ -22,8 +22,6 @@ import type {
   ClaimRequest,
   ClaimRequestInput,
   ClaimStatus,
-  MasjidAnnouncement,
-  MasjidAnnouncementInput,
   AuditAction,
   AdminProfile,
   AdminRole,
@@ -257,7 +255,7 @@ function masjidToFirestoreData(masjid: Masjid): Record<string, unknown> {
 
 async function writeAuditLog(input: {
   action: AuditAction;
-  targetCollection: "masjids" | "suggestions" | "claimRequests" | "jamaatTimings" | "admins" | "masjidAnnouncements";
+  targetCollection: "masjids" | "suggestions" | "claimRequests" | "jamaatTimings" | "admins";
   targetId: string;
   summary: string;
   actorId?: string;
@@ -341,30 +339,6 @@ function normalizeAdminProfile(id: string, data: Record<string, unknown>): Admin
     updatedAt: data.updatedAt ? dateLikeToString(data.updatedAt) : undefined,
     createdFromClaimId: typeof data.createdFromClaimId === "string" ? data.createdFromClaimId : undefined
   };
-}
-
-function normalizeMasjidAnnouncement(id: string, data: Record<string, unknown>): MasjidAnnouncement {
-  const priority = data.priority === "urgent" || data.priority === "important" || data.priority === "normal" ? data.priority : "normal";
-  return {
-    id,
-    masjidId: typeof data.masjidId === "string" ? data.masjidId : "",
-    title: typeof data.title === "string" ? data.title : "Masjid update",
-    message: typeof data.message === "string" ? data.message : "",
-    priority,
-    expiresAt: typeof data.expiresAt === "string" ? data.expiresAt : undefined,
-    active: data.active !== false,
-    createdAt: data.createdAt ? dateLikeToString(data.createdAt) : undefined,
-    createdBy: typeof data.createdBy === "string" ? data.createdBy : undefined
-  };
-}
-
-function isAnnouncementVisible(announcement: MasjidAnnouncement): boolean {
-  if (!announcement.active) return false;
-  if (!announcement.expiresAt) return true;
-  const expiryTime = new Date(announcement.expiresAt).getTime();
-  if (!Number.isFinite(expiryTime)) return true;
-  const endOfExpiryDay = expiryTime + 24 * 60 * 60 * 1000 - 1;
-  return endOfExpiryDay >= Date.now();
 }
 
 export function createDefaultVerificationChecklist(): MasjidVerificationChecklist {
@@ -599,91 +573,6 @@ export async function updateMasjidCurrentTimings(
   });
 }
 
-function canAdminManageMasjid(profile: AdminProfile, masjidId: string): boolean {
-  return profile.role === "owner" || (profile.role === "masjid_admin" && (profile.masjidIds ?? []).includes(masjidId));
-}
-
-export async function listMasjidsForAdmin(adminUid: string): Promise<{ profile?: AdminProfile; masjids: Masjid[]; source: MasjidListResult["source"]; message?: string }> {
-  const profile = await getAdminProfile(adminUid);
-  if (!profile) {
-    return { masjids: [], source: "empty", message: "No approved masjid-admin profile was found for this account yet." };
-  }
-
-  const result = await listMasjids();
-  const allowedMasjids = profile.role === "owner"
-    ? result.masjids
-    : result.masjids.filter((masjid) => (profile.masjidIds ?? []).includes(masjid.id));
-
-  return { profile, masjids: allowedMasjids, source: result.source, message: result.message };
-}
-
-export async function updateManagedMasjidProfile(input: {
-  masjidId: string;
-  adminUid: string;
-  jamaat: TimingUpdate["jamaat"];
-  jumuah: string[];
-  phone?: string;
-  facilities?: string[];
-  khutbahLanguages?: string[];
-  notes?: string;
-}): Promise<void> {
-  const db = getFirebaseDb();
-  if (!db) throw new Error("Firebase is not configured. Add .env.local first.");
-  if (!input.masjidId.trim()) throw new Error("Masjid ID is required.");
-  if (!input.adminUid.trim()) throw new Error("Signed-in admin UID is required.");
-
-  const profile = await getAdminProfile(input.adminUid);
-  if (!profile || !canAdminManageMasjid(profile, input.masjidId)) {
-    throw new Error("This account is not approved to manage this masjid.");
-  }
-
-  for (const salah of salahKeys) {
-    if (!/^\d{2}:\d{2}$/.test(input.jamaat[salah])) {
-      throw new Error(`Invalid ${salah} time. Use HH:MM format.`);
-    }
-  }
-
-  const today = todayDateId();
-  const cleanFacilities = uniqueStrings(input.facilities ?? []);
-  const cleanLanguages = uniqueStrings(input.khutbahLanguages ?? []);
-  const cleanJumuah = uniqueStrings(input.jumuah ?? []);
-
-  await setDoc(
-    doc(db, "masjids", input.masjidId),
-    {
-      jamaat: input.jamaat,
-      jumuah: cleanJumuah,
-      phone: input.phone?.trim() || null,
-      facilities: cleanFacilities,
-      khutbahLanguages: cleanLanguages,
-      notes: input.notes?.trim() || null,
-      verificationStatus: "admin_verified",
-      lastVerifiedAt: today,
-      updatedAt: serverTimestamp(),
-      updatedBy: input.adminUid
-    },
-    { merge: true }
-  );
-
-  await setDoc(doc(db, "jamaatTimings", `${input.masjidId}_${today}`), {
-    masjidId: input.masjidId,
-    date: today,
-    jamaat: input.jamaat,
-    jumuah: cleanJumuah,
-    source: "masjid_admin_dashboard",
-    updatedAt: serverTimestamp(),
-    updatedBy: input.adminUid
-  });
-
-  await writeAuditLog({
-    action: "timing_update",
-    targetCollection: "masjids",
-    targetId: input.masjidId,
-    summary: `Masjid admin updated timings/profile for ${input.masjidId}.`,
-    actorId: input.adminUid
-  });
-}
-
 export async function createSuggestion(input: SuggestionInput): Promise<string> {
   const db = getFirebaseDb();
   if (!db) throw new Error("Firebase is not configured. Add .env.local first.");
@@ -873,97 +762,6 @@ export async function listAdminProfiles(): Promise<AdminProfile[]> {
   return snapshot.docs
     .map((item) => normalizeAdminProfile(item.id, item.data()))
     .sort((a, b) => (a.email ?? a.id).localeCompare(b.email ?? b.id));
-}
-
-export async function getAdminProfile(adminId: string): Promise<AdminProfile | undefined> {
-  const db = getFirebaseDb();
-  if (!db) throw new Error("Firebase is not configured. Add .env.local first.");
-  if (!adminId.trim()) return undefined;
-
-  const snapshot = await getDoc(doc(db, "admins", adminId));
-  return snapshot.exists() ? normalizeAdminProfile(snapshot.id, snapshot.data()) : undefined;
-}
-
-export async function updateMasjidProfileDetails(input: {
-  masjidId: string;
-  phone?: string;
-  facilities?: string[];
-  khutbahLanguages?: string[];
-  notes?: string;
-  updatedBy?: string;
-}): Promise<void> {
-  const db = getFirebaseDb();
-  if (!db) throw new Error("Firebase is not configured. Add .env.local first.");
-  if (!input.masjidId.trim()) throw new Error("Masjid ID is required.");
-
-  await setDoc(
-    doc(db, "masjids", input.masjidId),
-    {
-      phone: input.phone?.trim() || null,
-      facilities: uniqueStrings(input.facilities ?? []),
-      khutbahLanguages: uniqueStrings(input.khutbahLanguages ?? []),
-      notes: input.notes?.trim() || null,
-      updatedAt: serverTimestamp(),
-      updatedBy: input.updatedBy ?? null
-    },
-    { merge: true }
-  );
-
-  await writeAuditLog({
-    action: "masjid_profile_update",
-    targetCollection: "masjids",
-    targetId: input.masjidId,
-    summary: `Updated profile details for ${input.masjidId}.`,
-    actorId: input.updatedBy
-  });
-}
-
-export async function createMasjidAnnouncement(input: MasjidAnnouncementInput, createdBy?: string): Promise<string> {
-  const db = getFirebaseDb();
-  if (!db) throw new Error("Firebase is not configured. Add .env.local first.");
-  if (!input.masjidId.trim()) throw new Error("Masjid ID is required.");
-  if (!input.title.trim()) throw new Error("Announcement title is required.");
-  if (!input.message.trim()) throw new Error("Announcement message is required.");
-
-  if (createdBy) {
-    const profile = await getAdminProfile(createdBy);
-    if (!profile || !canAdminManageMasjid(profile, input.masjidId)) {
-      throw new Error("This account is not approved to publish announcements for this masjid.");
-    }
-  }
-
-  const document = await addDoc(collection(db, "masjidAnnouncements"), {
-    masjidId: input.masjidId,
-    title: input.title.trim(),
-    message: input.message.trim(),
-    priority: input.priority,
-    expiresAt: input.expiresAt?.trim() || null,
-    active: true,
-    createdAt: serverTimestamp(),
-    createdBy: createdBy ?? null
-  });
-
-  await writeAuditLog({
-    action: "announcement_created",
-    targetCollection: "masjidAnnouncements",
-    targetId: document.id,
-    summary: `Created announcement for ${input.masjidId}.`,
-    actorId: createdBy
-  });
-
-  return document.id;
-}
-
-export async function listMasjidAnnouncements(masjidId: string): Promise<MasjidAnnouncement[]> {
-  if (!isFirebaseConfigured) return [];
-  const db = getFirebaseDb();
-  if (!db || !masjidId.trim()) return [];
-
-  const snapshot = await getDocs(collection(db, "masjidAnnouncements"));
-  return snapshot.docs
-    .map((item) => normalizeMasjidAnnouncement(item.id, item.data()))
-    .filter((announcement) => announcement.masjidId === masjidId && isAnnouncementVisible(announcement))
-    .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
 }
 
 export async function upsertAdminProfile(profile: AdminProfile, actorId?: string): Promise<void> {

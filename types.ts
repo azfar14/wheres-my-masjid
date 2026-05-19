@@ -154,23 +154,6 @@ export type ClaimRequest = ClaimRequestInput & {
   verificationNotes?: string;
 };
 
-export type MasjidAnnouncementPriority = "normal" | "important" | "urgent";
-
-export type MasjidAnnouncementInput = {
-  masjidId: string;
-  title: string;
-  message: string;
-  priority: MasjidAnnouncementPriority;
-  expiresAt?: string;
-};
-
-export type MasjidAnnouncement = MasjidAnnouncementInput & {
-  id: string;
-  active: boolean;
-  createdAt?: string;
-  createdBy?: string;
-};
-
 export type TrustLevel = "verified" | "strong" | "medium" | "low";
 
 export type TrustScore = {
@@ -196,8 +179,6 @@ export type AdminProfile = {
 export type AuditAction =
   | "masjid_upsert"
   | "timing_update"
-  | "announcement_created"
-  | "masjid_profile_update"
   | "suggestion_approved"
   | "suggestion_rejected"
   | "claim_status_changed"
@@ -210,7 +191,7 @@ export type AuditLog = {
   id: string;
   action: AuditAction;
   targetId: string;
-  targetCollection: "masjids" | "suggestions" | "claimRequests" | "jamaatTimings" | "admins" | "masjidAnnouncements";
+  targetCollection: "masjids" | "suggestions" | "claimRequests" | "jamaatTimings" | "admins";
   actorId?: string;
   createdAt?: string;
   summary: string;

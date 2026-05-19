@@ -33,7 +33,7 @@ export default function NotificationsPage() {
           <div className="cta-row">
             <button className="button" type="button" onClick={enable} disabled={isBusy}>{isBusy ? "Enabling…" : "Enable alerts"}</button>
             <Link className="secondary-button" href="/saved">Saved masjids</Link>
-            <Link className="ghost-button" href="/claim">Claim masjid</Link>
+            <Link className="ghost-button" href="/diagnostics">Diagnostics</Link>
           </div>
         </section>
 

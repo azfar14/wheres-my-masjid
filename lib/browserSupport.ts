@@ -61,7 +61,7 @@ export function compassSupportMessage(): { ok: boolean; message: string } {
       message: "This browser does not expose compass sensors. Use the true-north Qibla bearing or your phone’s native compass app."
     };
   }
-  return { ok: true, message: "Compass API detected. The app will use it only if this phone sends a true-north heading; otherwise it will fall back to the bearing/map line." };
+  return { ok: true, message: "Compass sensors are available. Keep your phone flat and tap Enable compass." };
 }
 
 export function readableCurrentUrl(): string {

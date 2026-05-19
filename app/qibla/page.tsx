@@ -30,56 +30,10 @@ function formatDegrees(value: number): string {
   return `${Math.round(normalizeDegrees(value))}°`;
 }
 
-type CompassSensorSource = "ios-webkit" | "absolute-orientation" | "absolute-event";
-
-type HeadingCandidate = {
-  heading: number;
-  source: CompassSensorSource;
-  priority: number;
-};
-
-function headingCandidateFromEvent(event: DeviceOrientationWithCompass): HeadingCandidate | undefined {
-  // iPhone Safari exposes the most reliable true-north compass heading here.
-  if (typeof event.webkitCompassHeading === "number" && Number.isFinite(event.webkitCompassHeading)) {
-    return {
-      heading: normalizeDegrees(event.webkitCompassHeading),
-      source: "ios-webkit",
-      priority: 3
-    };
-  }
-
-  // Android/Chromium can expose true-north alpha only on absolute orientation
-  // events. Generic non-absolute alpha is relative to an arbitrary starting
-  // point, so using it makes Qibla jump on many phones. Ignore it.
-  const isAbsoluteEvent = event.type === "deviceorientationabsolute";
-  const isMarkedAbsolute = event.absolute === true;
-  if ((isAbsoluteEvent || isMarkedAbsolute) && typeof event.alpha === "number" && Number.isFinite(event.alpha)) {
-    return {
-      heading: normalizeDegrees(360 - event.alpha),
-      source: isAbsoluteEvent ? "absolute-event" : "absolute-orientation",
-      priority: isAbsoluteEvent ? 2 : 1
-    };
-  }
-
+function readHeading(event: DeviceOrientationWithCompass): number | undefined {
+  if (typeof event.webkitCompassHeading === "number") return normalizeDegrees(event.webkitCompassHeading);
+  if (typeof event.alpha === "number") return normalizeDegrees(360 - event.alpha);
   return undefined;
-}
-
-function smoothHeading(previous: number | undefined, next: number, factor = 0.22): number {
-  if (previous === undefined) return next;
-  return normalizeDegrees(previous + signedAngle(previous, next) * factor);
-}
-
-function circularMeanDegrees(samples: number[]): number | undefined {
-  if (!samples.length) return undefined;
-  const vectors = samples.reduce(
-    (sum, sample) => {
-      const radians = (normalizeDegrees(sample) * Math.PI) / 180;
-      return { x: sum.x + Math.cos(radians), y: sum.y + Math.sin(radians) };
-    },
-    { x: 0, y: 0 }
-  );
-
-  return normalizeDegrees((Math.atan2(vectors.y, vectors.x) * 180) / Math.PI);
 }
 
 function signedAngle(from: number, to: number): number {
@@ -193,7 +147,6 @@ export default function QiblaPage() {
   const [compassEnabled, setCompassEnabled] = useState(false);
   const [compassStatus, setCompassStatus] = useState<string | undefined>();
   const [compassMode, setCompassMode] = useState<"not-started" | "waiting" | "active" | "fallback">("not-started");
-  const [compassSensorSource, setCompassSensorSource] = useState<CompassSensorSource | undefined>();
   const [placeQuery, setPlaceQuery] = useState("");
   const [placeResults, setPlaceResults] = useState<PlaceSearchResult[]>([]);
   const [isSearchingPlace, setIsSearchingPlace] = useState(false);
@@ -201,16 +154,6 @@ export default function QiblaPage() {
   const [copied, setCopied] = useState(false);
   const [rememberedLabel, setRememberedLabel] = useState<string | undefined>();
   const headingSeenRef = useRef(false);
-  const headingWindowRef = useRef<number[]>([]);
-  const compassCleanupRef = useRef<(() => void) | undefined>(undefined);
-  const compassTimeoutRef = useRef<number | undefined>(undefined);
-  const compassSensorSourceRef = useRef<CompassSensorSource | undefined>(undefined);
-  const compassSensorPriorityRef = useRef(0);
-  const smoothedHeadingRef = useRef<number | undefined>(undefined);
-  const lastRawHeadingRef = useRef<number | undefined>(undefined);
-  const lastHeadingAtRef = useRef<number | undefined>(undefined);
-  const rejectedHeadingCountRef = useRef(0);
-  const relativeOrientationSeenRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -231,21 +174,11 @@ export default function QiblaPage() {
     }
   }, []);
 
-  useEffect(() => {
-    return () => {
-      compassCleanupRef.current?.();
-      compassCleanupRef.current = undefined;
-      if (compassTimeoutRef.current !== undefined) window.clearTimeout(compassTimeoutRef.current);
-      compassTimeoutRef.current = undefined;
-    };
-  }, []);
-
   const qiblaBearing = useMemo(() => (location ? calculateQiblaBearing(location) : undefined), [location]);
   const arrowRotation = useMemo(
     () => (qiblaBearing !== undefined ? relativeQiblaArrowRotation(qiblaBearing, heading) : 0),
     [heading, qiblaBearing]
   );
-  const compassRoseRotation = useMemo(() => (heading !== undefined ? normalizeDegrees(-heading) : 0), [heading]);
   const distance = useMemo(() => (location ? qiblaDistanceKm(location) : undefined), [location]);
   const instruction = turnInstruction(qiblaBearing, heading);
   const qiblaCardLabel = qiblaBearing !== undefined ? `${formatDegrees(qiblaBearing)} ${compassDirectionLabel(qiblaBearing)}` : "—";
@@ -304,28 +237,10 @@ export default function QiblaPage() {
   }
 
   async function enableCompass() {
-    compassCleanupRef.current?.();
-    compassCleanupRef.current = undefined;
-    if (compassTimeoutRef.current !== undefined) window.clearTimeout(compassTimeoutRef.current);
-    compassTimeoutRef.current = undefined;
     setCompassStatus(undefined);
     setHeadingSamples([]);
     setSensorAccuracy(undefined);
-    setHeading(undefined);
-    setCompassSensorSource(undefined);
-    headingWindowRef.current = [];
     headingSeenRef.current = false;
-    compassSensorSourceRef.current = undefined;
-    compassSensorPriorityRef.current = 0;
-    smoothedHeadingRef.current = undefined;
-    lastRawHeadingRef.current = undefined;
-    lastHeadingAtRef.current = undefined;
-    rejectedHeadingCountRef.current = 0;
-    relativeOrientationSeenRef.current = false;
-
-    if (!location) {
-      setCompassStatus("Compass can start now, but choose your location so the Makkah/Qibla marker can point correctly.");
-    }
 
     const currentSupport = compassSupportMessage();
     if (!currentSupport.ok) {
@@ -347,105 +262,28 @@ export default function QiblaPage() {
 
       const handler = (event: Event) => {
         const orientation = event as DeviceOrientationWithCompass;
-        const candidate = headingCandidateFromEvent(orientation);
-
-        if (!candidate) {
-          if (typeof orientation.alpha === "number" && Number.isFinite(orientation.alpha)) {
-            relativeOrientationSeenRef.current = true;
-          }
-          return;
+        const nextHeading = readHeading(orientation);
+        if (nextHeading !== undefined) {
+          headingSeenRef.current = true;
+          setHeading(nextHeading);
+          setHeadingSamples((current) => [...current.slice(-9), nextHeading]);
+          setCompassMode("active");
+          setCompassStatus("Live compass is active. Keep the phone flat and rotate slowly.");
         }
-
-        // Lock to one absolute compass source. The old build mixed generic
-        // orientation and absolute orientation streams, which is why one phone
-        // looked correct while others jumped or drifted.
-        if (candidate.priority < compassSensorPriorityRef.current) return;
-        if (candidate.priority > compassSensorPriorityRef.current || compassSensorSourceRef.current !== candidate.source) {
-          compassSensorSourceRef.current = candidate.source;
-          compassSensorPriorityRef.current = candidate.priority;
-          smoothedHeadingRef.current = undefined;
-          lastRawHeadingRef.current = undefined;
-          lastHeadingAtRef.current = undefined;
-          headingWindowRef.current = [];
-          setHeadingSamples([]);
-          setCompassSensorSource(candidate.source);
-        }
-
-        const now = typeof performance !== "undefined" ? performance.now() : Date.now();
-        const previousRaw = lastRawHeadingRef.current;
-        const previousAt = lastHeadingAtRef.current;
-        const jump = previousRaw === undefined ? 0 : Math.abs(signedAngle(previousRaw, candidate.heading));
-
-        // Drop short-lived magnetic spikes, but allow real movement after a few
-        // repeated samples so the compass can still follow the phone.
-        if (previousRaw !== undefined && previousAt !== undefined && now - previousAt < 450 && jump > 95) {
-          rejectedHeadingCountRef.current += 1;
-          if (rejectedHeadingCountRef.current <= 3) return;
-        } else {
-          rejectedHeadingCountRef.current = 0;
-        }
-
-        lastRawHeadingRef.current = candidate.heading;
-        lastHeadingAtRef.current = now;
-        const smoothedHeading = smoothHeading(smoothedHeadingRef.current, candidate.heading);
-        smoothedHeadingRef.current = smoothedHeading;
-
-        headingSeenRef.current = true;
-        if (compassTimeoutRef.current !== undefined) {
-          window.clearTimeout(compassTimeoutRef.current);
-          compassTimeoutRef.current = undefined;
-        }
-
-        headingWindowRef.current = [...headingWindowRef.current.slice(-11), smoothedHeading];
-        const averageHeading = circularMeanDegrees(headingWindowRef.current) ?? smoothedHeading;
-        setHeading(averageHeading);
-        setHeadingSamples(headingWindowRef.current.slice(-12));
-        setCompassMode("active");
-        setCompassStatus(
-          location
-            ? "Live compass is using an absolute north sensor. Keep the phone flat; the Makkah marker points toward Qibla."
-            : "Live compass is using an absolute north sensor. Choose your location so the Makkah marker can point to Qibla."
-        );
-
         if (typeof orientation.webkitCompassAccuracy === "number") setSensorAccuracy(orientation.webkitCompassAccuracy);
-      };
-
-      const resetAfterScreenRotation = () => {
-        headingWindowRef.current = [];
-        smoothedHeadingRef.current = undefined;
-        lastRawHeadingRef.current = undefined;
-        lastHeadingAtRef.current = undefined;
-        rejectedHeadingCountRef.current = 0;
-        setHeadingSamples([]);
-        setCompassStatus("Screen rotation changed. Hold the phone flat for a fresh compass heading.");
       };
 
       window.addEventListener("deviceorientationabsolute", handler, true);
       window.addEventListener("deviceorientation", handler, true);
-      window.addEventListener("orientationchange", resetAfterScreenRotation);
-      window.screen?.orientation?.addEventListener?.("change", resetAfterScreenRotation);
-      compassCleanupRef.current = () => {
-        window.removeEventListener("deviceorientationabsolute", handler, true);
-        window.removeEventListener("deviceorientation", handler, true);
-        window.removeEventListener("orientationchange", resetAfterScreenRotation);
-        window.screen?.orientation?.removeEventListener?.("change", resetAfterScreenRotation);
-        if (compassTimeoutRef.current !== undefined) window.clearTimeout(compassTimeoutRef.current);
-        compassTimeoutRef.current = undefined;
-      };
       setCompassEnabled(true);
       setCompassMode("waiting");
-      setCompassStatus(location ? "Compass permission accepted. Waiting for the first heading sample…" : "Compass permission accepted. Waiting for heading; choose your location for the Qibla/Makkah marker.");
+      setCompassStatus("Compass permission accepted. Waiting for the first heading sample…");
 
-      compassTimeoutRef.current = window.setTimeout(() => {
+      window.setTimeout(() => {
         if (!headingSeenRef.current) {
           setCompassMode("fallback");
-          setCompassStatus(
-            relativeOrientationSeenRef.current
-              ? "This phone/browser sent only relative orientation, not a real north compass. Use the Qibla bearing number or map line; do not trust a drifting live arrow."
-              : "Compass permission worked, but the browser did not send a true-north heading sample. Use the bearing number with your native compass app."
-          );
+          setCompassStatus("Compass permission worked, but the browser did not send a heading sample. This is common on some phones/browsers. Use the bearing number with your native compass app.");
         }
-        compassTimeoutRef.current = undefined;
       }, 4500);
     } catch {
       setCompassEnabled(false);
@@ -497,7 +335,7 @@ export default function QiblaPage() {
   return (
     <>
       <AppHeader />
-      <main className="qibla-page safe-layout-page">
+      <main>
         <section className="hero-card qibla-hero upgraded-qibla-hero ultra-qibla-hero qibla-command-hero">
           <p className="kicker">Qibla precision studio</p>
           <h2 className="hero-title">Professional Qibla bearing, live compass when supported, and reliable fallbacks when sensors fail.</h2>
@@ -520,7 +358,6 @@ export default function QiblaPage() {
             <div className="meta-item"><span>Secure page</span><strong>{secure ? "Yes" : "No"}</strong></div>
             <div className="meta-item"><span>Compass API</span><strong>{support.ok ? "Available" : "Fallback"}</strong></div>
             <div className="meta-item"><span>Mode</span><strong>{compassMode.replace("-", " ")}</strong></div>
-            <div className="meta-item"><span>Sensor source</span><strong>{compassSensorSource ? compassSensorSource.replace("-", " ") : "—"}</strong></div>
             <div className="meta-item"><span>Compass stability</span><strong>{compassMode === "active" ? stability.label : "fallback"}</strong></div>
             <div className="meta-item"><span>Location source</span><strong>{locationSource ?? "none"}</strong></div>
             <div className="meta-item"><span>Location accuracy</span><strong>{locationAccuracyMeters ? `${Math.round(locationAccuracyMeters)} m` : "—"}</strong></div>
@@ -575,20 +412,18 @@ export default function QiblaPage() {
           </div>
 
           <div className="qibla-compass-stage">
-            <div className="compass-dial premium-compass precision-compass real-qibla-compass" aria-label="Qibla compass">
-              <div className="compass-rose" style={{ transform: `rotate(${compassRoseRotation}deg)` }} aria-hidden="true">
-                <span className="compass-north">N</span>
-                <span className="compass-east">E</span>
-                <span className="compass-south">S</span>
-                <span className="compass-west">W</span>
-                <span className="degree-tick tick-0">0°</span>
-                <span className="degree-tick tick-90">90°</span>
-                <span className="degree-tick tick-180">180°</span>
-                <span className="degree-tick tick-270">270°</span>
-              </div>
-              <div className="compass-center-pin" aria-hidden="true">You</div>
-              <div className={qiblaBearing === undefined ? "qibla-arrow premium-arrow makkah-arrow pending" : "qibla-arrow premium-arrow makkah-arrow"} style={{ transform: `rotate(${arrowRotation}deg)` }} aria-label="Qibla direction toward Makkah">
-                <span aria-hidden="true">🕋</span>
+            <div className="compass-dial premium-compass precision-compass" aria-label="Qibla compass">
+              <span className="compass-north">N</span>
+              <span className="compass-east">E</span>
+              <span className="compass-south">S</span>
+              <span className="compass-west">W</span>
+              <span className="degree-tick tick-0">0°</span>
+              <span className="degree-tick tick-90">90°</span>
+              <span className="degree-tick tick-180">180°</span>
+              <span className="degree-tick tick-270">270°</span>
+              <div className="kaaba-dot">Kaaba</div>
+              <div className="qibla-arrow premium-arrow" style={{ transform: `rotate(${arrowRotation}deg)` }}>
+                <span>↑</span>
               </div>
             </div>
           </div>
@@ -598,7 +433,6 @@ export default function QiblaPage() {
             <div className="meta-item"><span>Phone heading</span><strong>{heading !== undefined ? formatDegrees(heading) : "—"}</strong></div>
             <div className="meta-item"><span>Compass accuracy</span><strong>{sensorAccuracy !== undefined ? `±${Math.round(sensorAccuracy)}°` : compassEnabled ? "waiting" : "fallback"}</strong></div>
             <div className="meta-item"><span>Stability</span><strong>{compassMode === "active" ? stability.label : "fallback"}</strong></div>
-            <div className="meta-item"><span>Sensor</span><strong>{compassSensorSource ? compassSensorSource.replace("-", " ") : "fallback"}</strong></div>
             <div className="meta-item"><span>Location</span><strong>{locationAccuracyMeters ? `${Math.round(locationAccuracyMeters)} m` : "manual/place"}</strong></div>
           </div>
 
@@ -668,7 +502,7 @@ export default function QiblaPage() {
             <li>For phone location/compass, open the deployed HTTPS website, not a local 192.168.x.x development URL.</li>
             <li>Tap <strong>Use my location</strong>. If it fails, search your area or paste manual coordinates.</li>
             <li>Tap <strong>Enable compass</strong> only after the page has a location.</li>
-            <li>If the live arrow is unstable or the page says fallback, use the large bearing number with your native compass app or the map line.</li>
+            <li>If the live arrow fails, use the large bearing number with your native compass app.</li>
             <li>Keep the phone flat and away from metal, chargers, speakers, vehicles, and magnets.</li>
           </ol>
         </section>

@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Where’s My Masjid",
     short_name: "My Masjid",
-    description: "Find nearby masjids, jamaat timings, and Qibla direction.",
+    description: "Find nearby masjids, Qibla direction, jamaat timings, saved masjids, verified updates, and claim tools for masjid teams.",
     start_url: "/",
     display: "standalone",
     background_color: "#f5f1e8",

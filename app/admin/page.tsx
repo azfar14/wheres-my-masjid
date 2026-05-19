@@ -554,7 +554,7 @@ export default function AdminPage() {
         <DataStatus source={source} message={message} isLoading={isLoading} />
 
         <section className="notice neutral compact admin-qa-strip">
-          Before public testing, use <Link href="/admin/verification">Verification + claims</Link> to approve committee claims, assign masjid-only admins, and confirm exact pins before direct navigation.
+          Before public testing, use <Link href="/qa">Production QA</Link> with real coordinates. It shows provider counts, accepted/rejected candidates, errors, and launch readiness for that location.
         </section>
 
         {status && <div className="notice success">{status}</div>}
