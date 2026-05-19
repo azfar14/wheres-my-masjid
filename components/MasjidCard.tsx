@@ -22,8 +22,7 @@ import {
 import {
   hasVerifiedTimings,
   isExternalDiscoveredListing,
-  isLowConfidenceListing,
-  isOpenStreetMapListing
+  isLowConfidenceListing
 } from "@/lib/verification";
 
 type MasjidCardProps = {
@@ -37,7 +36,6 @@ export function MasjidCard({ masjid, distanceKm, origin, rank }: MasjidCardProps
   const next = getNextJamaat(masjid);
   const walkMins = walkingMinutes(distanceKm);
   const timingsAreVerified = hasVerifiedTimings(masjid);
-  const isOsm = isOpenStreetMapListing(masjid);
   const isExternal = isExternalDiscoveredListing(masjid);
   const lowConfidence = isLowConfidenceListing(masjid);
   const advice = reachabilityAdvice(masjid, distanceKm);
@@ -50,6 +48,8 @@ export function MasjidCard({ masjid, distanceKm, origin, rank }: MasjidCardProps
   const timingLabel = displayTimingLabel(masjid);
   const hasPublicName = hasRealPublicName(masjid);
   const navigationAction = getMasjidNavigationAction(masjid, origin);
+  const verificationNotice = displayVerificationNotice(masjid);
+  const routeHelper = navigationAction.trustedForDirectRoute ? "Route ready" : "Verify route first";
 
   useEffect(() => {
     setSaved(isSavedMasjid(masjid.id));
@@ -68,6 +68,28 @@ export function MasjidCard({ masjid, distanceKm, origin, rank }: MasjidCardProps
             <span className={`mini-badge ${sourceClassName(masjid)}`}>{sourceBadge}</span>
             <span className="mini-badge clean-trust-badge">{trustLabel}</span>
           </div>
+          {!timingsAreVerified && (
+            <>
+              <div className="card-status-chips">
+                <span className="info-mini-chip warn"><span aria-hidden="true">ℹ</span>{timingLabel}</span>
+                <span className={navigationAction.trustedForDirectRoute ? "info-mini-chip soft" : "info-mini-chip warn"}>
+                  <span aria-hidden="true">{navigationAction.trustedForDirectRoute ? "⌖" : "🧭"}</span>
+                  {routeHelper}
+                </span>
+              </div>
+              <div className="card-inline-note provider-inline-note">
+                <span className="info-inline-icon" aria-hidden="true">⌖</span>
+                <div>
+                  <strong>{verificationNotice}</strong>
+                  <small>
+                    {hasPublicName
+                      ? "Confirm the real mosque listing in Google Maps, then add jamaat timings so this becomes trusted."
+                      : "Confirm the exact public name and pin in Google Maps, then submit timings so this becomes trusted."}
+                  </small>
+                </div>
+              </div>
+            </>
+          )}
         </div>
         <div className={timingsAreVerified ? "next-badge" : "next-badge muted"} title={timingsAreVerified ? `${next.displayName} jamaat ${next.time}` : "Jamaat timings need verification"}>
           <strong>{timingsAreVerified ? next.time : "—"}</strong>
@@ -90,17 +112,21 @@ export function MasjidCard({ masjid, distanceKm, origin, rank }: MasjidCardProps
         </div>
       </div>
 
-      <p className="source-line clean-source-line">{timingsAreVerified ? advice : `${timingLabel} · ${displayVerificationNotice(masjid)}`}</p>
+      {timingsAreVerified && (
+        <>
+          <p className="source-line clean-source-line">{advice}</p>
 
-      <div className={`reach-now-strip ${reachDecision.mode}`}>
-        <strong>{reachDecision.headline}</strong>
-        <span>{reachDecision.detail}</span>
-      </div>
+          <div className={`reach-now-strip ${reachDecision.mode}`}>
+            <strong>{reachDecision.headline}</strong>
+            <span>{reachDecision.detail}</span>
+          </div>
 
-      <div className={`navigation-safety-strip ${navigationAction.badgeTone}`}>
-        <strong>{navigationAction.badgeLabel}</strong>
-        <span>{navigationAction.trustedForDirectRoute ? "Google Maps will open a route-ready destination." : "The raw provider pin is blocked; confirm the real mosque listing in Google Maps first."}</span>
-      </div>
+          <div className={`navigation-safety-strip ${navigationAction.badgeTone}`}>
+            <strong>{navigationAction.badgeLabel}</strong>
+            <span>{navigationAction.trustedForDirectRoute ? "Google Maps will open a route-ready destination." : "The raw provider pin is blocked; confirm the real mosque listing in Google Maps first."}</span>
+          </div>
+        </>
+      )}
 
       {timingsAreVerified ? (
         <>
@@ -113,12 +139,7 @@ export function MasjidCard({ masjid, distanceKm, origin, rank }: MasjidCardProps
           </div>
           <div className="notice compact success reach-advice">{advice}</div>
         </>
-      ) : (
-        <div className={lowConfidence ? "notice compact danger-soft" : "notice compact neutral"}>
-          {hasPublicName ? "Location discovered. " : "Exact public name needed. "}
-          Open Google Maps to verify the real mosque listing, then suggest the exact pin/name and jamaat timings so this becomes trusted.
-        </div>
-      )}
+      ) : null}
 
       <div className="card-actions three-actions">
         <Link className="ghost-button" href={`/masjid/${masjid.id}`}>Details</Link>

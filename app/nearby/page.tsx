@@ -43,7 +43,6 @@ type SearchReport = {
   radiusKm: number;
   finalCount: number;
   providerBreakdown: string;
-  qaHref: string;
   noResultReason?: string;
 };
 
@@ -144,10 +143,9 @@ export default function NearbyPage() {
         radiusKm: radius,
         finalCount: sortedInRadius.length,
         providerBreakdown: providerText || "No external providers answered.",
-        qaHref: `/qa?lat=${coords.lat.toFixed(6)}&lng=${coords.lng.toFixed(6)}&radiusKm=${radius}`,
         noResultReason: sortedInRadius.length
           ? undefined
-          : "No accepted masjid was found inside the selected radius. Expand the radius manually, check QA, or report the exact pin. The app no longer shows far-away results as nearby."
+          : "No accepted masjid was found inside the selected radius. Expand the radius manually, open Google Maps search, or report the exact pin. The app no longer shows far-away results as nearby."
       });
 
       setDiscoveryMessage(
@@ -157,9 +155,7 @@ export default function NearbyPage() {
       );
 
       if (result.errors.length) {
-        setDiscoveryError(`Some provider layers failed, but the strict nearby filter still ran: ${result.errors.slice(0, 3).join(" · ")}`);
-      } else if (result.diagnostics.length) {
-        setDiscoveryError(`Provider diagnostics: ${result.diagnostics.slice(0, 8).join(" · ")}`);
+        setDiscoveryError("Some discovery layers were busy, but the accepted nearby results still loaded.");
       }
       return sortedInRadius;
     } catch (error) {
@@ -256,7 +252,7 @@ export default function NearbyPage() {
             setDiscoveredMasjids((current) => mergeMasjidSources(current, area.masjids, first.coordinates));
             saveDiscoveredMasjids(area.masjids);
             setDiscoveryMessage(`${area.message} Showing candidates sorted from the selected area center. For true nearby results, use your exact phone location or a precise locality.`);
-            setDiscoveryError(area.diagnostics?.length ? `Area diagnostics: ${area.diagnostics.slice(0, 6).join(" · ")}` : undefined);
+            setDiscoveryError(undefined);
           }
         } catch (areaError) {
           setPlaceError(areaError instanceof Error ? areaError.message : "Area rescue search failed. Try a more specific locality.");
@@ -374,7 +370,9 @@ export default function NearbyPage() {
   const activeFilterCount = [verifiedOnly, hasTimingsOnly, jumuahOnly, womenFriendlyOnly, parkingOnly, wheelchairOnly, savedOnly, directRouteOnly].filter(Boolean).length + (query.trim() ? 1 : 0);
   const speedModeNote = providerResults
     .flatMap((provider) => provider.diagnostics ?? [])
-    .find((item) => /Fast mode|Skipped slow OSM/i.test(item));
+    .some((item) => /Fast mode|Skipped slow OSM/i.test(item))
+    ? "The app skipped slow provider layers and showed fast accepted results first."
+    : undefined;
 
   function clearAllFilters() {
     setQuery("");
@@ -391,7 +389,7 @@ export default function NearbyPage() {
   return (
     <>
       <AppHeader />
-      <main>
+      <main className="nearby-page safe-layout-page">
         <div className="section-head">
           <div>
             <h2>Nearby masjids</h2>
@@ -483,10 +481,10 @@ export default function NearbyPage() {
           <section className="info-card qa-mini-report">
             <div className="section-inline-head">
               <div>
-                <h3>Search report</h3>
+                <h3>Discovery summary</h3>
                 <p className="small-text">Final accepted results: {searchReport.finalCount} · Radius checked: {searchReport.radiusKm} km</p>
               </div>
-              <Link className="ghost-button" href={searchReport.qaHref}>Open QA lab</Link>
+              <Link className="ghost-button" href="/missing">Report missing</Link>
             </div>
             <p className="small-text">{searchReport.providerBreakdown}</p>
             {searchReport.noResultReason && <div className="notice danger-soft compact">{searchReport.noResultReason}</div>}
@@ -649,8 +647,10 @@ export default function NearbyPage() {
               ))}
             </div>
           )}
-          <p className="small-text">Best coverage model: Firestore for verified jamaat timings, optional Google Places for Google Maps POIs, Mappls/Foursquare for extra coverage, OpenStreetMap fallback, and exact-pin community reports.</p>
-          <p className="small-text">Mappls/Foursquare keys improve coverage. Google Places is optional if you need the same mosque POIs that appear inside Google Maps. Without provider keys, the app depends mostly on Firestore + OpenStreetMap fallback.</p>
+          <div className="provider-discovery-note" role="status" aria-live="polite">
+            <strong>Mappls/Foursquare discovery:</strong>
+            <span>Extra provider keys add more mosque candidates. Verified Firestore timings stay the trusted source; unverified provider pins still ask users to confirm in Maps.</span>
+          </div>
 
           <div className="card-actions three-actions utility-actions">
             {location && <a className="ghost-button" href={googleMapsNearbyMasjidSearchUrl(location)} target="_blank" rel="noreferrer">Google Maps nearby</a>}
@@ -692,7 +692,6 @@ export default function NearbyPage() {
               <div className="card-actions">
                 {activeFilterCount > 0 && <button className="ghost-button" type="button" onClick={clearAllFilters}>Clear filters</button>}
                 {location && <a className="ghost-button" href={googleMapsNearbyMasjidSearchUrl(location)} target="_blank" rel="noreferrer">Open Google Maps search</a>}
-                {searchReport && <Link className="ghost-button" href={searchReport.qaHref}>Debug this search</Link>}
                 <Link className="secondary-button" href="/missing">Report missing masjid</Link>
               </div>
             </section>
