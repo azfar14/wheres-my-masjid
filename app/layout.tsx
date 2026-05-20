@@ -5,10 +5,57 @@ import { PwaRegister } from "@/components/PwaRegister";
 import { BottomNav } from "@/components/BottomNav";
 import { AppFooter } from "@/components/AppFooter";
 
+
+
 export const metadata: Metadata = {
-  title: "Where’s My Masjid",
-  description: "Find nearby masjids, jamaat timings, and Qibla direction.",
-  applicationName: "Where’s My Masjid"
+  title: {
+    default: "Where’s My Masjid | Nearby Masjids, Qibla & Jamaat Timings",
+    template: "%s | Where’s My Masjid"
+  },
+  description:
+    "Find nearby masjids, verified jamaat timings, Qibla direction, saved masjids, and trusted updates from masjid teams wherever you are.",
+  keywords: [
+    "Where’s My Masjid",
+    "nearby masjid",
+    "masjid finder",
+    "mosque finder",
+    "jamaat timings",
+    "Qibla direction",
+    "Muslim prayer app",
+    "find mosque near me",
+    "masjid near me",
+    "verified masjid timings"
+  ],
+  applicationName: "Where’s My Masjid",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" }
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }]
+  },
+  openGraph: {
+    title: "Where’s My Masjid | Nearby Masjids, Qibla & Jamaat Timings",
+    description:
+      "Find nearby masjids, verified jamaat timings, Qibla direction, saved masjids, and trusted updates from masjid teams.",
+    siteName: "Where’s My Masjid",
+    type: "website",
+    images: [
+      {
+        url: "/og-cover.png",
+        width: 1200,
+        height: 630,
+        alt: "Where’s My Masjid app preview"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Where’s My Masjid | Nearby Masjids, Qibla & Jamaat Timings",
+    description:
+      "Find nearby masjids, verified jamaat timings, Qibla direction, saved masjids, and trusted updates from masjid teams.",
+    images: ["/og-cover.png"]
+  }
 };
 
 export const viewport: Viewport = {
