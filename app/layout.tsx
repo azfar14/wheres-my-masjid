@@ -9,6 +9,9 @@ import { AppFooter } from "@/components/AppFooter";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://whereismymasjid.com"),
+  other: {
+    "google-adsense-account": "ca-pub-7913609166514231"
+  },
 
   title: {
     default: "Where’s My Masjid | Nearby Masjids, Qibla & Jamaat Timings",
