@@ -1,0 +1,129 @@
+/* Scoped to this add-on. No changes to global buttons, links or navigation. */
+.headerRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+.brandSlot { min-width: 0; }
+.brandSlot > * { min-width: 0; max-width: 100%; }
+.brandSlot :where(span, p, strong, small) { min-width: 0; }
+.trigger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: end;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 11px;
+  border: 1px solid #b7cfc1;
+  border-radius: 999px;
+  background: #f6f9f3;
+  color: #103d2f;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.trigger:hover { background: #e8f0e9; border-color: #799f89; }
+.trigger svg, .close svg { display: block; flex-shrink: 0; }
+.duration { padding-left: 6px; border-left: 1px solid #b7cfc1; font-size: 11px; }
+.trigger:focus-visible, .close:focus-visible, .directLink:focus-visible {
+  outline: 3px solid #227b5b;
+  outline-offset: 3px;
+}
+.dialog:not([open]) { display: none; }
+.dialog {
+  box-sizing: border-box;
+  position: fixed;
+  inset: 0;
+  width: min(440px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #dce8df;
+  border-radius: 18px;
+  background: #fff;
+  color: #182c24;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 28%);
+  font-family: inherit;
+  text-align: start;
+}
+.dialog::backdrop { background: rgb(5 18 13 / 72%); }
+.modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 12px 6px 16px;
+  background: #fff;
+}
+.title { margin: 0; font: inherit; font-size: 16px; font-weight: 700; line-height: 1.4; }
+.close {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #eef4f0;
+  color: #183d2b;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.close:hover { background: #e0ede5; }
+.description { margin: 0; padding: 0 16px 12px; color: #506259; font-size: 13px; line-height: 1.5; }
+.media { background: #07110c; }
+.video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 9 / 16;
+  max-height: calc(100vh - 230px);
+  max-height: calc(100dvh - 230px);
+  min-height: 120px;
+  object-fit: contain;
+  background: #07110c;
+}
+.footer { padding: 10px 16px 12px; }
+.hint, .error { margin: 0; font-size: 12px; line-height: 1.5; }
+.hint { color: #506259; }
+.error { color: #9b2323; }
+.directLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #166349;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 360px) {
+  .headerRow { gap: 6px; }
+  .trigger { padding-inline: 8px; gap: 4px; }
+  .title { font-size: 14px; }
+  .brandSlot :where(span, p, strong, small) { white-space: normal; overflow-wrap: anywhere; }
+}
